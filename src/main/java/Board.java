@@ -68,8 +68,8 @@ public class Board
 
     private void updatePieceRecord(Piece piece)
     {
-        for(int i = 0; i < 16; i++) {
-            if(whitePieces[i] == null) {
+        for (int i = 0; i < 16; i++) {
+            if (whitePieces[i] == null) {
                 whitePieces[i] = piece;
                 return;
             }
