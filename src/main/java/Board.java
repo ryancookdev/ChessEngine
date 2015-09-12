@@ -6,14 +6,14 @@ public class Board
 
     public Board()
     {
-        this.board = new Piece[128];
-        this.blackPieces = new Piece[16];
-        this.whitePieces = new Piece[16];
+        board = new Piece[128];
+        blackPieces = new Piece[16];
+        whitePieces = new Piece[16];
     }
 
     public Piece getPiece(byte square)
     {
-        return this.board[square];
+        return board[square];
     }
 
     public void initialPosition()
