@@ -1,15 +1,32 @@
+package software.ryancook;
+
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PieceTest
 {
-    @Test
-    public void testCreatePiece() throws Exception
+    Board board;
+    Piece piece;
+
+    @Before
+    public void setUp() throws Exception
     {
-        Board board = new Board();
-        Piece piece = new Piece(Piece.WHITE_ROOK, board, Square.A1);
-        assertEquals(Piece.WHITE_ROOK, piece.type);
-        assertEquals(board, piece.board);
+        board = new Board();
+    }
+
+    @Test
+    public void createPiece() throws Exception
+    {
+        piece = new Bishop(Movement.WHITE_ROOK, board, Square.A1);
+        assertEquals(Movement.WHITE_ROOK, piece.type);
         assertEquals(Square.A1, piece.square);
+    }
+
+    @Test
+    public void pieceIsOnTheBoard() throws Exception
+    {
+        piece = new Bishop(Movement.WHITE_ROOK, board, Square.A1);
+        assertEquals(board, piece.board);
     }
 }

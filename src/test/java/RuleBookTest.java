@@ -1,11 +1,13 @@
+package software.ryancook;
+
 import org.junit.Test;
 import java.util.ArrayList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class RuleBookTest
 {
     @Test
-    public void testGetLegalMoves() throws Exception
+    public void getLegalMoves() throws Exception
     {
         Board board = new Board();
         board.initialPosition();

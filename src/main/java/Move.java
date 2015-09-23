@@ -1,3 +1,5 @@
+package software.ryancook;
+
 public class Move
 {
     public final byte startSquare;

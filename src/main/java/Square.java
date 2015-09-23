@@ -1,3 +1,5 @@
+package software.ryancook;
+
 public class Square
 {
     public static final byte A1 = 0;

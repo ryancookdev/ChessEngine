@@ -1,3 +1,5 @@
+package software.ryancook;
+
 import java.util.ArrayList;
 
 public class RuleBook
