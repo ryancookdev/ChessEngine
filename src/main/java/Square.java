@@ -71,4 +71,26 @@ public class Square
     {
         return (square & 0x88) == 0;
     }
+
+    public static int getRank(byte square)
+    {
+        if (square >= 0 && square <= 7) {
+            return 1;
+        } if (square >= 16 && square <= 23) {
+            return 2;
+        } if (square >= 32 && square <= 39) {
+            return 3;
+        } if (square >= 48 && square <= 55) {
+            return 4;
+        } if (square >= 64 && square <= 71) {
+            return 5;
+        } if (square >= 80 && square <= 87) {
+            return 6;
+        } if (square >= 96 && square <= 103) {
+            return 7;
+        } if (square >= 112 && square <= 119) {
+            return 8;
+        }
+        return 0;
+    }
 }

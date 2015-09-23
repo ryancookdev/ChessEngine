@@ -1,18 +1,21 @@
 package software.ryancook;
 
 import software.ryancook.piece.*;
+import java.util.*;
 
 public class Board
 {
     private Piece[] board;
-    private Movement[] blackPieces;
-    private Movement[] whitePieces;
+    private Piece[] blackPieces;
+    private Piece[] whitePieces;
+    private Piece[] activePieces;
 
     public Board()
     {
         board = new Piece[128];
-        blackPieces = new Movement[16];
-        whitePieces = new Movement[16];
+        blackPieces = new Piece[16];
+        whitePieces = new Piece[16];
+        activePieces = null;
     }
 
     public Piece getPiece(byte square)
@@ -20,61 +23,22 @@ public class Board
         return board[square];
     }
 
-    public void initialPosition()
+    public void setPiece(Piece piece, byte square)
     {
-        setPiece(Square.A1, Movement.WHITE_ROOK);
-        setPiece(Square.B1, Movement.WHITE_KNIGHT);
-        setPiece(Square.C1, Movement.WHITE_BISHOP);
-        setPiece(Square.D1, Movement.WHITE_QUEEN);
-        setPiece(Square.E1, Movement.WHITE_KING);
-        setPiece(Square.F1, Movement.WHITE_BISHOP);
-        setPiece(Square.G1, Movement.WHITE_KNIGHT);
-        setPiece(Square.H1, Movement.WHITE_ROOK);
-        setPiece(Square.A2, Movement.WHITE_PAWN);
-        setPiece(Square.B2, Movement.WHITE_PAWN);
-        setPiece(Square.C2, Movement.WHITE_PAWN);
-        setPiece(Square.D2, Movement.WHITE_PAWN);
-        setPiece(Square.E2, Movement.WHITE_PAWN);
-        setPiece(Square.F2, Movement.WHITE_PAWN);
-        setPiece(Square.G2, Movement.WHITE_PAWN);
-        setPiece(Square.H2, Movement.WHITE_PAWN);
-        setPiece(Square.A7, Movement.BLACK_PAWN);
-        setPiece(Square.B7, Movement.BLACK_PAWN);
-        setPiece(Square.C7, Movement.BLACK_PAWN);
-        setPiece(Square.D7, Movement.BLACK_PAWN);
-        setPiece(Square.E7, Movement.BLACK_PAWN);
-        setPiece(Square.F7, Movement.BLACK_PAWN);
-        setPiece(Square.G7, Movement.BLACK_PAWN);
-        setPiece(Square.H7, Movement.BLACK_PAWN);
-        setPiece(Square.A8, Movement.BLACK_ROOK);
-        setPiece(Square.B8, Movement.BLACK_KNIGHT);
-        setPiece(Square.C8, Movement.BLACK_BISHOP);
-        setPiece(Square.D8, Movement.BLACK_QUEEN);
-        setPiece(Square.E8, Movement.BLACK_KING);
-        setPiece(Square.F8, Movement.BLACK_BISHOP);
-        setPiece(Square.G8, Movement.BLACK_KNIGHT);
-        setPiece(Square.H8, Movement.BLACK_ROOK);
-    }
-
-    public void movePiece(Move move)
-    {
-        board[move.endSquare] = board[move.startSquare];
-        board[move.startSquare] = null;
-        board[move.endSquare].square = move.endSquare;
-    }
-
-    private void setPiece(byte square, byte pieceType)
-    {
-        Piece piece = new Bishop(pieceType, this, square);
+        piece.setLocation(this, square);
         setPieceOnBoard(square, piece);
-        updatePieceRecord(piece);
+        if (piece.getType() < 0) {
+            updatePieceRecord(blackPieces, piece);
+        } else {
+            updatePieceRecord(whitePieces, piece);
+        }
     }
 
-    private void updatePieceRecord(Movement piece)
+    private void updatePieceRecord(Piece[] pieceRecord, Piece piece)
     {
         for (int i = 0; i < 16; i++) {
-            if (whitePieces[i] == null) {
-                whitePieces[i] = piece;
+            if (pieceRecord[i] == null) {
+                pieceRecord[i] = piece;
                 return;
             }
         }
@@ -83,5 +47,52 @@ public class Board
     private void setPieceOnBoard(byte square, Piece piece)
     {
         board[square] = piece;
+    }
+
+    public void movePiece(Move move)
+    {
+        board[move.endSquare] = board[move.startSquare];
+        board[move.startSquare] = null;
+        board[move.endSquare].setSquare(move.endSquare);
+    }
+
+    public int getTotalWhitePieces()
+    {
+        int total = 0;
+        for (int i = 0; i < whitePieces.length; i++) {
+            if (whitePieces[i] != null) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public int getTotalBlackPieces()
+    {
+        int total = 0;
+        for (int i = 0; i < blackPieces.length; i++) {
+            if (blackPieces[i] != null) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public List<Move> getLegalMoves()
+    {
+        List<Move> moves = new ArrayList<>();
+        for (Piece piece : activePieces) {
+            moves.addAll(piece.getLegalMoves());
+        }
+        return moves;
+    }
+
+    public void setActivePieces(Color color)
+    {
+        if (color == Color.WHITE) {
+            activePieces = whitePieces;
+        } else {
+            activePieces = blackPieces;
+        }
     }
 }

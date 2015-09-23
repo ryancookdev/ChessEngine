@@ -1,11 +1,25 @@
 package software.ryancook.piece;
 
-import software.ryancook.Board;
-
-public class Bishop extends Piece
+public class Bishop extends LongPiece
 {
-    public Bishop(byte type, Board board, byte square)
+    public Bishop(Color color)
     {
-        super(type, board, square);
+        super(color);
     }
+
+    @Override
+    protected byte getType(Color color)
+    {
+        if (color == Color.WHITE) {
+            return Movement.WHITE_BISHOP;
+        } else {
+            return Movement.BLACK_BISHOP;
+        }
+    }
+
+    protected byte[] getPossibleOrientations()
+    {
+        return new byte[] {-17, -15, 15, 17};
+    }
+
 }

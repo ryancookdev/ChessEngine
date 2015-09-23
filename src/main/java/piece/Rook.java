@@ -1,11 +1,25 @@
 package software.ryancook.piece;
 
-import software.ryancook.Board;
-
-public class Rook extends Piece
+public class Rook extends LongPiece
 {
-    public Rook(byte type, Board board, byte square)
+    public Rook(Color color)
     {
-        super(type, board, square);
+        super(color);
+    }
+
+    @Override
+    protected byte getType(Color color)
+    {
+        if (color == Color.WHITE) {
+            return Movement.WHITE_ROOK;
+        } else {
+            return Movement.BLACK_ROOK;
+        }
+    }
+
+    @Override
+    protected byte[] getPossibleOrientations()
+    {
+        return new byte[] {-1, -16, 1, 16};
     }
 }

@@ -1,5 +1,8 @@
 package software.ryancook.piece;
 
+import software.ryancook.Move;
+import java.util.List;
+
 public interface Movement
 {
     byte WHITE_PAWN = 1;
@@ -14,4 +17,7 @@ public interface Movement
     byte BLACK_BISHOP = -5;
     byte BLACK_ROOK = -6;
     byte BLACK_QUEEN = -7;
+
+    List<Move> getLegalMoves();
 }
+
