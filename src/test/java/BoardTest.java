@@ -1,9 +1,8 @@
 package software.ryancook;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.*;
+import software.ryancook.piece.Piece;
+import static org.junit.Assert.*;
 
 public class BoardTest
 {

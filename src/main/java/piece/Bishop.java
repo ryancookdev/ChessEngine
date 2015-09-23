@@ -1,4 +1,6 @@
-package software.ryancook;
+package software.ryancook.piece;
+
+import software.ryancook.Board;
 
 public class Bishop extends Piece
 {

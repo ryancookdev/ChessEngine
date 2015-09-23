@@ -1,5 +1,7 @@
 package software.ryancook;
 
+import software.ryancook.piece.*;
+
 public class Board
 {
     private Piece[] board;

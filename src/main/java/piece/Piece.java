@@ -1,4 +1,7 @@
-package software.ryancook;
+package software.ryancook.piece;
+
+import software.ryancook.Board;
+import software.ryancook.Movement;
 
 public class Piece implements Movement
 {
