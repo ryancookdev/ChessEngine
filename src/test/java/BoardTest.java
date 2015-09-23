@@ -1,6 +1,7 @@
 package software.ryancook;
 
 import org.junit.*;
+import software.ryancook.piece.Movement;
 import software.ryancook.piece.Piece;
 import static org.junit.Assert.*;
 

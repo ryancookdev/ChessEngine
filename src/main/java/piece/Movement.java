@@ -1,4 +1,4 @@
-package software.ryancook;
+package software.ryancook.piece;
 
 public interface Movement
 {
