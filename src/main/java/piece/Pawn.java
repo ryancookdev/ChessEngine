@@ -58,10 +58,7 @@ public class Pawn extends Piece
     private boolean isSquareOccupied(byte square)
     {
         Piece possiblePiece = board.getPiece(square);
-        if (possiblePiece == null) {
-            return false;
-        }
-        return true;
+        return (possiblePiece != null);
     }
 
     private boolean onStartSquare()
