@@ -30,12 +30,12 @@ public class BishopTest
     @Test
     public void bishopMovesWithFriendsOnPath() throws Exception
     {
+        piece = new Bishop(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.WHITE), Square.G2);
         board.setPiece(new Pawn(Color.WHITE), Square.D3);
         board.setPiece(new Pawn(Color.WHITE), Square.B7);
         board.setPiece(new Pawn(Color.WHITE), Square.H7);
-        piece = new Bishop(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(5, moves.size());
     }
@@ -43,12 +43,12 @@ public class BishopTest
     @Test
     public void bishopMovesWithEnemiesOnPath() throws Exception
     {
+        piece = new Bishop(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.BLACK), Square.G2);
         board.setPiece(new Pawn(Color.BLACK), Square.D3);
         board.setPiece(new Pawn(Color.BLACK), Square.B7);
         board.setPiece(new Pawn(Color.BLACK), Square.H7);
-        piece = new Bishop(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(9, moves.size());
     }

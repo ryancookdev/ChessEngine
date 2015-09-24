@@ -30,12 +30,12 @@ public class RookTest
     @Test
     public void rookMovesWithFriendsOnPath() throws Exception
     {
+        piece = new Rook(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.WHITE), Square.E2);
         board.setPiece(new Pawn(Color.WHITE), Square.D4);
         board.setPiece(new Pawn(Color.WHITE), Square.E7);
         board.setPiece(new Pawn(Color.WHITE), Square.H4);
-        piece = new Rook(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(5, moves.size());
     }
@@ -43,12 +43,12 @@ public class RookTest
     @Test
     public void rookMovesWithEnemiesOnPath() throws Exception
     {
+        piece = new Rook(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.BLACK), Square.E2);
         board.setPiece(new Pawn(Color.BLACK), Square.D4);
         board.setPiece(new Pawn(Color.BLACK), Square.E7);
         board.setPiece(new Pawn(Color.BLACK), Square.H4);
-        piece = new Rook(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(9, moves.size());
     }

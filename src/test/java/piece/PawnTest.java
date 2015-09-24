@@ -30,9 +30,9 @@ public class PawnTest
     @Test
     public void whitePawnSingleMovesWithFriendsOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.WHITE), Square.E5);
         piece = new Pawn(Color.WHITE);
         board.setPiece(piece, Square.E4);
+        board.setPiece(new Pawn(Color.WHITE), Square.E5);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(0, moves.size());
     }
@@ -40,9 +40,9 @@ public class PawnTest
     @Test
     public void whitePawnSingleMovesWithEnemiesOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.BLACK), Square.E5);
         piece = new Pawn(Color.WHITE);
         board.setPiece(piece, Square.E4);
+        board.setPiece(new Pawn(Color.BLACK), Square.E5);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(0, moves.size());
     }
@@ -59,9 +59,9 @@ public class PawnTest
     @Test
     public void blackPawnSingleMovesWithFriendsOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.BLACK), Square.E3);
         piece = new Pawn(Color.BLACK);
         board.setPiece(piece, Square.E4);
+        board.setPiece(new Pawn(Color.BLACK), Square.E3);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(0, moves.size());
     }
@@ -69,9 +69,9 @@ public class PawnTest
     @Test
     public void blackPawnSingleMovesWithEnemiesOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.WHITE), Square.E3);
         piece = new Pawn(Color.BLACK);
         board.setPiece(piece, Square.E4);
+        board.setPiece(new Pawn(Color.WHITE), Square.E3);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(0, moves.size());
     }
@@ -88,9 +88,9 @@ public class PawnTest
     @Test
     public void whitePawnDoubleMovesWithFriendsOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.WHITE), Square.E4);
         piece = new Pawn(Color.WHITE);
         board.setPiece(piece, Square.E2);
+        board.setPiece(new Pawn(Color.WHITE), Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(1, moves.size());
     }
@@ -98,9 +98,9 @@ public class PawnTest
     @Test
     public void whitePawnDoubleMovesWithEnemiesOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.BLACK), Square.E4);
         piece = new Pawn(Color.WHITE);
         board.setPiece(piece, Square.E2);
+        board.setPiece(new Pawn(Color.BLACK), Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(1, moves.size());
     }
@@ -117,9 +117,9 @@ public class PawnTest
     @Test
     public void blackPawnDoubleMovesWithFriendsOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.BLACK), Square.E5);
         piece = new Pawn(Color.BLACK);
         board.setPiece(piece, Square.E7);
+        board.setPiece(new Pawn(Color.BLACK), Square.E5);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(1, moves.size());
     }
@@ -127,9 +127,9 @@ public class PawnTest
     @Test
     public void blackPawnDoubleMovesWithEnemiesOnPath() throws Exception
     {
-        board.setPiece(new Pawn(Color.WHITE), Square.E5);
         piece = new Pawn(Color.BLACK);
         board.setPiece(piece, Square.E7);
+        board.setPiece(new Pawn(Color.WHITE), Square.E5);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(1, moves.size());
     }

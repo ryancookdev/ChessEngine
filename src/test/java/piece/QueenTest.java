@@ -30,6 +30,8 @@ public class QueenTest
     @Test
     public void queenMovesWithFriendsOnPath() throws Exception
     {
+        piece = new Queen(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.WHITE), Square.E2);
         board.setPiece(new Pawn(Color.WHITE), Square.D4);
         board.setPiece(new Pawn(Color.WHITE), Square.E7);
@@ -38,8 +40,6 @@ public class QueenTest
         board.setPiece(new Pawn(Color.WHITE), Square.D3);
         board.setPiece(new Pawn(Color.WHITE), Square.B7);
         board.setPiece(new Pawn(Color.WHITE), Square.H7);
-        piece = new Queen(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(10, moves.size());
     }
@@ -47,6 +47,8 @@ public class QueenTest
     @Test
     public void queenMovesWithEnemiesOnPath() throws Exception
     {
+        piece = new Queen(Color.WHITE);
+        board.setPiece(piece, Square.E4);
         board.setPiece(new Pawn(Color.BLACK), Square.E2);
         board.setPiece(new Pawn(Color.BLACK), Square.D4);
         board.setPiece(new Pawn(Color.BLACK), Square.E7);
@@ -55,8 +57,6 @@ public class QueenTest
         board.setPiece(new Pawn(Color.BLACK), Square.D3);
         board.setPiece(new Pawn(Color.BLACK), Square.B7);
         board.setPiece(new Pawn(Color.BLACK), Square.H7);
-        piece = new Queen(Color.WHITE);
-        board.setPiece(piece, Square.E4);
         List<Move> moves = piece.getLegalMoves();
         assertEquals(18, moves.size());
     }
