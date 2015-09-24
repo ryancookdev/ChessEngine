@@ -66,6 +66,6 @@ public class BoardTest
     {
         Position.setInitialPosition(board);
         List<Move> moves = board.getLegalMoves();
-        assertEquals(4, moves.size());
+        assertEquals(20, moves.size());
     }
 }

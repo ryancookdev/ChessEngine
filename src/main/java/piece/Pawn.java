@@ -24,45 +24,44 @@ public class Pawn extends Piece
     public List<Move> getLegalMoves()
     {
         List<Move> moves = new ArrayList<>();
-        moves.addAll(getSingleMoves());
+        moves.addAll(getSingleAndDoubleMoves());
         return moves;
     }
 
-    private List<Move> getSingleMoves()
+    private List<Move> getSingleAndDoubleMoves()
     {
         List<Move> moves = new ArrayList<>();
-        byte orientation = getPossibleOrientations()[0];
-        byte newSquare = (byte) (square + orientation);
-        if (!Square.isValid(newSquare)) {
-            return moves;
-        }
-        Piece possiblePiece = board.getPiece(newSquare);
-        if (possiblePiece != null) {
+
+        byte newSquare = getNextSquare(square);
+        if (isSquareOccupied(newSquare)) {
             return moves;
         }
         moves.add(new Move(square, newSquare));
+
+        if (onStartSquare()) {
+            newSquare = getNextSquare(newSquare);
+            if (isSquareOccupied(newSquare)) {
+                return moves;
+            }
+            moves.add(new Move(square, newSquare));
+        }
+
         return moves;
     }
 
-    private List<Move> getDoubleMoves()
+    private byte getNextSquare(byte currentSquare)
     {
-        List<Move> moves = new ArrayList<>();
+        byte orientation = getPossibleOrientations()[0];
+        return (byte) (currentSquare + orientation);
+    }
 
-        if (!onStartSquare()) {
-            return moves;
+    private boolean isSquareOccupied(byte square)
+    {
+        Piece possiblePiece = board.getPiece(square);
+        if (possiblePiece == null) {
+            return false;
         }
-
-        /*byte orientation = getPossibleOrientations()[0];
-        byte newSquare = (byte) (square + orientation);
-        if (!Square.isValid(newSquare)) {
-            return moves;
-        }
-        Piece possiblePiece = board.getPiece(newSquare);
-        if (possiblePiece != null) {
-            return moves;
-        }
-        moves.add(new Move(square, newSquare));*/
-        return moves;
+        return true;
     }
 
     private boolean onStartSquare()
