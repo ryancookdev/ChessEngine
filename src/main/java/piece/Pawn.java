@@ -25,6 +25,7 @@ public class Pawn extends Piece
     {
         List<Move> moves = new ArrayList<>();
         moves.addAll(getSingleAndDoubleMoves());
+        moves.addAll(getCaptures());
         return moves;
     }
 
@@ -43,6 +44,23 @@ public class Pawn extends Piece
             if (isSquareOccupied(newSquare)) {
                 return moves;
             }
+            moves.add(new Move(square, newSquare));
+        }
+
+        return moves;
+    }
+
+    private List<Move> getCaptures()
+    {
+        List<Move> moves = new ArrayList<>();
+
+        byte newSquare = (byte) (getNextSquare(square) + 1);
+        if (isSquareOccupied(newSquare) && !sameColorAsMe(board.getPiece(newSquare))) {
+            moves.add(new Move(square, newSquare));
+        }
+
+        newSquare = (byte) (getNextSquare(square) - 1);
+        if (isSquareOccupied(newSquare) && !sameColorAsMe(board.getPiece(newSquare))) {
             moves.add(new Move(square, newSquare));
         }
 
