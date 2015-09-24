@@ -10,4 +10,9 @@ public class Move
         this.startSquare = startSquare;
         this.endSquare = endSquare;
     }
+
+    public String toString()
+    {
+        return Square.getString(startSquare) + "-" + Square.getString(endSquare);
+    }
 }

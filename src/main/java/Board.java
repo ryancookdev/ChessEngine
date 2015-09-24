@@ -51,9 +51,23 @@ public class Board
 
     public void movePiece(Move move)
     {
-        board[move.endSquare] = board[move.startSquare];
+        Piece movedPiece = board[move.startSquare];
+        Piece capturedPiece = board[move.endSquare];
+
+        // Update moved piece
+        board[move.endSquare] = movedPiece;
+        movedPiece.setSquare(move.endSquare);
         board[move.startSquare] = null;
-        board[move.endSquare].setSquare(move.endSquare);
+
+        // Toggle player to move
+        activePieces = (activePieces == whitePieces ? blackPieces : whitePieces);
+
+        // Remove captured piece from the piece list
+        for (int i = 0; i < activePieces.length; i++) {
+            if (activePieces[i] == capturedPiece) {
+                activePieces[i] = null;
+            }
+        }
     }
 
     public int getTotalWhitePieces()
@@ -82,7 +96,9 @@ public class Board
     {
         List<Move> moves = new ArrayList<>();
         for (Piece piece : activePieces) {
-            moves.addAll(piece.getLegalMoves());
+            if (piece != null) {
+                moves.addAll(piece.getLegalMoves());
+            }
         }
         return moves;
     }
@@ -94,5 +110,44 @@ public class Board
         } else {
             activePieces = blackPieces;
         }
+    }
+
+    public String toString()
+    {
+        String position = " ";
+
+        for (byte i = Square.A8; i <= Square.H8; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A7; i <= Square.H7; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A6; i <= Square.H6; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A5; i <= Square.H5; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A4; i <= Square.H4; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A3; i <= Square.H3; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A2; i <= Square.H2; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+        position += "\n ";
+        for (byte i = Square.A1; i <= Square.H1; i++) {
+            position += (board[i] == null ? ". " : String.valueOf(board[i]) + " ");
+        }
+
+        return position;
     }
 }
