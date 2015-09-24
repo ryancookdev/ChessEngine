@@ -106,6 +106,17 @@ public class PawnTest
     }
 
     @Test
+    public void whitePawnCapturesBlackPawn() throws Exception
+    {
+        piece = new Pawn(Color.WHITE);
+        board.setPiece(piece, Square.E4);
+        board.setPiece(new Pawn(Color.BLACK), Square.D5);
+        board.setPiece(new Pawn(Color.BLACK), Square.F5);
+        List<Move> moves = piece.getLegalMoves();
+        assertEquals(3, moves.size());
+    }
+
+    @Test
     public void blackPawnDoubleMovesOnEmptyBoard() throws Exception
     {
         piece = new Pawn(Color.BLACK);
@@ -133,4 +144,16 @@ public class PawnTest
         List<Move> moves = piece.getLegalMoves();
         assertEquals(1, moves.size());
     }
+
+    @Test
+    public void blackPawnCapturesWhitePawn() throws Exception
+    {
+        piece = new Pawn(Color.BLACK);
+        board.setPiece(piece, Square.E5);
+        board.setPiece(new Pawn(Color.WHITE), Square.D4);
+        board.setPiece(new Pawn(Color.WHITE), Square.F4);
+        List<Move> moves = piece.getLegalMoves();
+        assertEquals(3, moves.size());
+    }
+
 }
