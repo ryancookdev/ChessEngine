@@ -5,6 +5,7 @@ public class Queen extends LongPiece
     public Queen(Color color)
     {
         super(color);
+        pieceValue = 9;
     }
 
     @Override
@@ -15,6 +16,12 @@ public class Queen extends LongPiece
         } else {
             return Movement.BLACK_QUEEN;
         }
+    }
+
+    @Override
+    public int getValue()
+    {
+        return pieceValue;
     }
 
     @Override

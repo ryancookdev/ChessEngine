@@ -5,6 +5,7 @@ public class Rook extends LongPiece
     public Rook(Color color)
     {
         super(color);
+        pieceValue = 5;
     }
 
     @Override

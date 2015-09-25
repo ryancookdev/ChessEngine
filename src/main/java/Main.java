@@ -6,6 +6,7 @@ public class Main
 {
     public static Scanner scanner;
     public static Board board;
+    public static Engine engine;
 
     public static void main(String[] args)
     {
@@ -16,9 +17,10 @@ public class Main
 
             if (input.equals("show")) {
                 System.out.println(board);
+                System.out.println("Score: " + engine.evaluatePosition(board));
             } else {
-                Move humanMove = parseMove(input);
-                Move computerMove = getComputerMove(humanMove);
+                getAndPlayHumanMove(input);
+                Move computerMove = getAndPlayComputerMove();
                 displayComputerMove(computerMove);
             }
         }
@@ -28,6 +30,7 @@ public class Main
     {
         board = new Board();
         Position.setInitialPosition(board);
+        engine = new Engine();
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
@@ -37,21 +40,20 @@ public class Main
         System.out.println("  " + computerMove);
     }
 
-    private static Move getComputerMove(Move humanMove)
+    private static Move getAndPlayComputerMove()
     {
-        board.movePiece(humanMove);
-
-        Move computerMove = board.getLegalMoves().get(0);
+        Move computerMove = engine.calculateBestMove(board);
         board.movePiece(computerMove);
-
         return computerMove;
     }
 
-    private static Move parseMove(String input)
+    private static Move getAndPlayHumanMove(String input)
     {
         byte startSquare = Square.getSquare(input.split("-")[0]);
         byte endSquare = Square.getSquare(input.split("-")[1]);
-        return new Move(startSquare, endSquare);
+        Move move = new Move(startSquare, endSquare);
+        board.movePiece(move);
+        return move;
     }
 
     private static String askUserForMove()

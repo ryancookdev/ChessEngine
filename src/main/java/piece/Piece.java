@@ -9,6 +9,7 @@ public abstract class Piece implements Movement
     protected Board board;
     protected byte square;
     protected byte type;
+    protected int pieceValue;
 
     public Piece(Color color)
     {
@@ -44,6 +45,11 @@ public abstract class Piece implements Movement
     }
 
     public abstract List<Move> getLegalMoves();
+
+    public int getValue()
+    {
+        return pieceValue;
+    }
 
     protected abstract byte[] getPossibleOrientations();
 

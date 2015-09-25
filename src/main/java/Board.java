@@ -77,6 +77,20 @@ public class Board
         }
     }
 
+    public List<Piece> getWhitePieces()
+    {
+        List<Piece> pieces = new ArrayList<>(Arrays.asList(whitePieces));
+        pieces.removeAll(Collections.singleton(null));
+        return pieces;
+    }
+
+    public List<Piece> getBlackPieces()
+    {
+        List<Piece> pieces = new ArrayList<>(Arrays.asList(blackPieces));
+        pieces.removeAll(Collections.singleton(null));
+        return pieces;
+    }
+
     public int getTotalWhitePieces()
     {
         int total = 0;

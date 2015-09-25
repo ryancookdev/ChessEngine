@@ -9,6 +9,7 @@ public class King extends Piece
     public King(Color color)
     {
         super(color);
+        pieceValue = 99999;
     }
 
     @Override

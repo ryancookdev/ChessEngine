@@ -5,6 +5,7 @@ public class Bishop extends LongPiece
     public Bishop(Color color)
     {
         super(color);
+        pieceValue = 3;
     }
 
     @Override
