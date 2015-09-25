@@ -86,7 +86,7 @@ public class Square
 
     public static String getString(byte square)
     {
-        int sq = square++;
+        square++;
         int rank = Math.floorDiv(square, 16) + 1;
         int file = square - ((rank - 1) * 16);
         char letter = (char) (file + 96);
