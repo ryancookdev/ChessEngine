@@ -1,10 +1,15 @@
-package software.ryancook.piece;
+package software.ryancook;
 
-import software.ryancook.Move;
 import java.util.List;
 
 public interface Movement
 {
+    byte PAWN = 1;
+    byte KNIGHT = 2;
+    byte KING = 3;
+    byte BISHOP = 5;
+    byte ROOK = 6;
+    byte QUEEN = 7;
     byte WHITE_PAWN = 1;
     byte WHITE_KNIGHT = 2;
     byte WHITE_KING = 3;

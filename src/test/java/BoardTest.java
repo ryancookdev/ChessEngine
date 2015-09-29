@@ -1,7 +1,7 @@
 package software.ryancook;
 
 import org.junit.*;
-import software.ryancook.piece.*;
+
 import java.util.List;
 import static org.junit.Assert.*;
 
@@ -18,30 +18,63 @@ public class BoardTest
     @Test
     public void createEmptyBoard() throws Exception
     {
-        Piece piece = board.getPiece(Square.A1);
-        assertNull("A1 should not have a piece", piece);
+        byte piece = board.getPiece(Square.A1);
+        assertEquals("A1 should not have a piece", 0, piece);
 
         piece = board.getPiece(Square.H8);
-        assertNull("H8 should not have a piece", piece);
+        assertEquals("H8 should not have a piece", 0, piece);
     }
 
     @Test
     public void initialPosition() throws Exception
     {
         Position.setInitialPosition(board);
-        assertEquals(Movement.WHITE_ROOK, board.getPiece(Square.A1).getType());
-        assertEquals(Movement.WHITE_KNIGHT, board.getPiece(Square.B1).getType());
-        assertEquals(Movement.WHITE_BISHOP, board.getPiece(Square.C1).getType());
-        assertEquals(Movement.WHITE_QUEEN, board.getPiece(Square.D1).getType());
-        assertEquals(Movement.WHITE_PAWN, board.getPiece(Square.A2).getType());
-        assertEquals(Movement.WHITE_PAWN, board.getPiece(Square.B2).getType());
-        assertEquals(Movement.BLACK_PAWN, board.getPiece(Square.G7).getType());
-        assertEquals(Movement.BLACK_PAWN, board.getPiece(Square.H7).getType());
-        assertEquals(Movement.BLACK_KING, board.getPiece(Square.E8).getType());
-        assertEquals(Movement.BLACK_BISHOP, board.getPiece(Square.F8).getType());
-        assertEquals(Movement.BLACK_KNIGHT, board.getPiece(Square.G8).getType());
-        assertEquals(Movement.BLACK_ROOK, board.getPiece(Square.H8).getType());
-        assertNull(board.getPiece(Square.E4));
+        assertEquals(Piece.WHITE_ROOK, board.getPiece(Square.A1));
+        assertEquals(Piece.WHITE_KNIGHT, board.getPiece(Square.B1));
+        assertEquals(Piece.WHITE_BISHOP, board.getPiece(Square.C1));
+        assertEquals(Piece.WHITE_QUEEN, board.getPiece(Square.D1));
+        assertEquals(Piece.WHITE_PAWN, board.getPiece(Square.A2));
+        assertEquals(Piece.WHITE_PAWN, board.getPiece(Square.B2));
+        assertEquals(Piece.BLACK_PAWN, board.getPiece(Square.G7));
+        assertEquals(Piece.BLACK_PAWN, board.getPiece(Square.H7));
+        assertEquals(Piece.BLACK_KING, board.getPiece(Square.E8));
+        assertEquals(Piece.BLACK_BISHOP, board.getPiece(Square.F8));
+        assertEquals(Piece.BLACK_KNIGHT, board.getPiece(Square.G8));
+        assertEquals(Piece.BLACK_ROOK, board.getPiece(Square.H8));
+        assertEquals(0, board.getPiece(Square.E4));
+    }
+
+    @Test
+    public void countPieces() throws Exception
+    {
+        Position.setInitialPosition(board);
+        assertEquals(16, board.getTotalWhitePieces());
+    }
+
+    @Test
+    public void copiedBoardHasNewBoardReference() throws Exception
+    {
+        Position.setInitialPosition(board);
+        Board newBoard = new Board(board);
+        board.movePiece(new Move(Square.A2, Square.A3));
+        assertEquals("There should still be a white pawn on A2", Piece.WHITE_PAWN, newBoard.getPiece(Square.A2));
+    }
+
+    @Test
+    public void copiedBoardHasNewPieceListReference() throws Exception
+    {
+        Position.setInitialPosition(board);
+        Board newBoard = new Board(board);
+        board.setPiece((byte) 0, Square.A2);
+        assertEquals(16, newBoard.getTotalWhitePieces());
+        assertEquals(15, board.getTotalWhitePieces());
+    }
+
+    @Test
+    public void colorToMove() throws Exception
+    {
+        Position.setInitialPosition(board);
+        assertEquals(Color.WHITE, board.getColorToMove());
     }
 
     @Test
@@ -49,8 +82,8 @@ public class BoardTest
     {
         Position.setInitialPosition(board);
         board.movePiece(new Move(Square.A2, Square.A3));
-        assertNull("A2 should be empty", board.getPiece(Square.A2));
-        assertEquals("There should be a white pawn on A3", Movement.WHITE_PAWN, board.getPiece(Square.A3).getType());
+        assertEquals("A2 should be empty", 0, board.getPiece(Square.A2));
+        assertEquals("There should be a white pawn on A3", Piece.WHITE_PAWN, board.getPiece(Square.A3));
     }
 
     @Test

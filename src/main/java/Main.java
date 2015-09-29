@@ -31,13 +31,15 @@ public class Main
         board = new Board();
         Position.setInitialPosition(board);
         engine = new Engine();
+        engine.setMaxNodes(10000);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
 
     private static void displayComputerMove(Move computerMove)
     {
-        System.out.println("  " + computerMove);
+        System.out.println("  " + computerMove + "\n");
+        System.out.println(board);
     }
 
     private static Move getAndPlayComputerMove()

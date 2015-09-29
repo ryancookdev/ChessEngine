@@ -1,44 +1,42 @@
 package software.ryancook;
 
-import software.ryancook.piece.*;
-
 public class Position
 {
     public static void setInitialPosition(Board board)
     {
         board.setActivePieces(Color.WHITE);
 
-        board.setPiece(new Rook(Color.WHITE), Square.A1);
-        board.setPiece(new Knight(Color.WHITE), Square.B1);
-        board.setPiece(new Bishop(Color.WHITE), Square.C1);
-        board.setPiece(new Queen(Color.WHITE), Square.D1);
-        board.setPiece(new King(Color.WHITE), Square.E1);
-        board.setPiece(new Bishop(Color.WHITE), Square.F1);
-        board.setPiece(new Knight(Color.WHITE), Square.G1);
-        board.setPiece(new Rook(Color.WHITE), Square.H1);
-        board.setPiece(new Pawn(Color.WHITE), Square.A2);
-        board.setPiece(new Pawn(Color.WHITE), Square.B2);
-        board.setPiece(new Pawn(Color.WHITE), Square.C2);
-        board.setPiece(new Pawn(Color.WHITE), Square.D2);
-        board.setPiece(new Pawn(Color.WHITE), Square.E2);
-        board.setPiece(new Pawn(Color.WHITE), Square.F2);
-        board.setPiece(new Pawn(Color.WHITE), Square.G2);
-        board.setPiece(new Pawn(Color.WHITE), Square.H2);
-        board.setPiece(new Pawn(Color.BLACK), Square.A7);
-        board.setPiece(new Pawn(Color.BLACK), Square.B7);
-        board.setPiece(new Pawn(Color.BLACK), Square.C7);
-        board.setPiece(new Pawn(Color.BLACK), Square.D7);
-        board.setPiece(new Pawn(Color.BLACK), Square.E7);
-        board.setPiece(new Pawn(Color.BLACK), Square.F7);
-        board.setPiece(new Pawn(Color.BLACK), Square.G7);
-        board.setPiece(new Pawn(Color.BLACK), Square.H7);
-        board.setPiece(new Rook(Color.BLACK), Square.A8);
-        board.setPiece(new Knight(Color.BLACK), Square.B8);
-        board.setPiece(new Bishop(Color.BLACK), Square.C8);
-        board.setPiece(new Queen(Color.BLACK), Square.D8);
-        board.setPiece(new King(Color.BLACK), Square.E8);
-        board.setPiece(new Bishop(Color.BLACK), Square.F8);
-        board.setPiece(new Knight(Color.BLACK), Square.G8);
-        board.setPiece(new Rook(Color.BLACK), Square.H8);
+        board.setPiece(Piece.WHITE_ROOK, Square.A1);
+        board.setPiece(Piece.WHITE_KNIGHT, Square.B1);
+        board.setPiece(Piece.WHITE_BISHOP, Square.C1);
+        board.setPiece(Piece.WHITE_QUEEN, Square.D1);
+        board.setPiece(Piece.WHITE_KING, Square.E1);
+        board.setPiece(Piece.WHITE_BISHOP, Square.F1);
+        board.setPiece(Piece.WHITE_KNIGHT, Square.G1);
+        board.setPiece(Piece.WHITE_ROOK, Square.H1);
+        board.setPiece(Piece.WHITE_PAWN, Square.A2);
+        board.setPiece(Piece.WHITE_PAWN, Square.B2);
+        board.setPiece(Piece.WHITE_PAWN, Square.C2);
+        board.setPiece(Piece.WHITE_PAWN, Square.D2);
+        board.setPiece(Piece.WHITE_PAWN, Square.E2);
+        board.setPiece(Piece.WHITE_PAWN, Square.F2);
+        board.setPiece(Piece.WHITE_PAWN, Square.G2);
+        board.setPiece(Piece.WHITE_PAWN, Square.H2);
+        board.setPiece(Piece.BLACK_PAWN, Square.A7);
+        board.setPiece(Piece.BLACK_PAWN, Square.B7);
+        board.setPiece(Piece.BLACK_PAWN, Square.C7);
+        board.setPiece(Piece.BLACK_PAWN, Square.D7);
+        board.setPiece(Piece.BLACK_PAWN, Square.E7);
+        board.setPiece(Piece.BLACK_PAWN, Square.F7);
+        board.setPiece(Piece.BLACK_PAWN, Square.G7);
+        board.setPiece(Piece.BLACK_PAWN, Square.H7);
+        board.setPiece(Piece.BLACK_ROOK, Square.A8);
+        board.setPiece(Piece.BLACK_KNIGHT, Square.B8);
+        board.setPiece(Piece.BLACK_BISHOP, Square.C8);
+        board.setPiece(Piece.BLACK_QUEEN, Square.D8);
+        board.setPiece(Piece.BLACK_KING, Square.E8);
+        board.setPiece(Piece.BLACK_BISHOP, Square.F8);
+        board.setPiece(Piece.BLACK_KNIGHT, Square.G8);
+        board.setPiece(Piece.BLACK_ROOK, Square.H8);
     }
 }

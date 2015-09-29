@@ -1,4 +1,4 @@
-package software.ryancook.piece;
+package software.ryancook;
 
 public enum Color
 {
