@@ -4,21 +4,78 @@ import java.util.*;
 
 public class Engine
 {
-    private int minDepth;
-    private long maxNodes;
+    private static final int LOSE_GAME = -999;
+    private static final int WIN_GAME = 999;
+    private final int minDepth;
+    private final long maxNodes;
     private int minPly;
+    private long maxNodesPerMove;
     private int totalNodes;
 
     public Engine()
     {
-        maxNodes = 1_000_000;
-        minDepth = 3;
-        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+        this.minDepth = 4;
+        this.maxNodes = 5000000;
     }
 
-    public void setMaxNodes(int maxNodes)
+    public Engine(int minDepth, int maxNodes)
     {
+        this.minDepth = minDepth;
         this.maxNodes = maxNodes;
+    }
+
+    public Move calculateBestMove(Board board)
+    {
+        setMinPly(board);
+        List<Move> moves = getSortedMoves(board);
+        maxNodesPerMove = Math.floorDiv(maxNodes, moves.size());
+        Move bestMove = new Move();
+        bestMove.value = LOSE_GAME;
+        for (Move move : moves) {
+            totalNodes = 1;
+            Board newBoard = getNewPosition(board, move);
+            if (true) {
+                int score = (-1 * negamax(newBoard, LOSE_GAME, -1 * bestMove.value, false));
+                if (bestMove.value < score) {
+                    bestMove = move;
+                    bestMove.value = score;
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    private int negamax(Board board, int alpha, int beta, boolean lastMoveCapture)
+    {
+        List<Move> moves = getSortedMoves(board);
+        for (Move move : moves) {
+            if (!incrementAndCheckNodeCount()) {
+                return beta;
+            }
+            boolean capture = isCapture(board, move);
+            if (isKingCaptured(board, move)) {
+                return WIN_GAME;
+            }
+            Board newBoard = getNewPosition(board, move);
+            int score;
+            if (reachedMinimumDepth(newBoard) && isQuiescent(newBoard, alpha, capture, lastMoveCapture)) {
+                score = evaluatePosition(newBoard);
+            } else {
+                score = (-1 * negamax(newBoard, -1 * beta, -1 * alpha, capture));
+            }
+            if (score >= beta) {
+                return beta; // fail hard beta-cutoff
+            }
+            if (score > alpha) {
+                alpha = score;
+            }
+        }
+        if (alpha == LOSE_GAME) {
+            if (!isKingInCheck(board)) {
+                return 0;
+            }
+        }
+        return alpha;
     }
 
     public int getTotalNodes()
@@ -26,113 +83,21 @@ public class Engine
         return totalNodes;
     }
 
-    public Move calculateBestMove(Board board)
-    {
-        minPly = board.getPly() + minDepth;
-        totalNodes = 0;
-
-        Move bestMove = new Move();
-        List<Move> moves = board.getLegalMoves();
-
-        if (board.getColorToMove() == Color.WHITE) {
-            bestMove.value = Integer.MIN_VALUE;
-        } else {
-            bestMove.value = Integer.MAX_VALUE;
-        }
-
-        for (Move move : moves) {
-            totalNodes++;
-            if (board.getColorToMove() == Color.WHITE) {
-                Board newBoard = new Board(board);
-                boolean currentMoveCapture = isCapture(board, move);
-                newBoard.movePiece(move);
-                int minValue = min(newBoard, bestMove.value, currentMoveCapture);
-                if (bestMove.value < minValue) {
-                    bestMove = move;
-                    bestMove.value = minValue;
-                }
-            } else {
-                Board newBoard = new Board(board);
-                boolean currentMoveCapture = isCapture(board, move);
-                newBoard.movePiece(move);
-                int maxValue = max(newBoard, bestMove.value, currentMoveCapture);
-                if (bestMove.value > maxValue) {
-                    bestMove = move;
-                    bestMove.value = maxValue;
-                }
-            }
-        }
-        return bestMove;
-    }
-
-    public int max(Board board, int parentBestValue, boolean lastMoveCapture)
-    {
-        Move bestMove = getInitialBestMove(board);
-        List<Move> moves = getSortedMoves(board);
-        for (Move move : moves) {
-            incrementAndCheckNodeCount();
-            Board newBoard = new Board(board);
-            boolean currentMoveCapture = isCapture(board, move);
-            boolean quiescent = isQuiescent(lastMoveCapture, currentMoveCapture);
-            newBoard.movePiece(move);
-            if (quiescent && reachedMinimumDepth(newBoard)) {
-                move.value = evaluatePosition(newBoard);
-            } else {
-                move.value = min(newBoard, bestMove.value, currentMoveCapture);
-                // Alpha Beta Pruning
-                if (move.value >= parentBestValue) {
-                    return move.value;
-                }
-            }
-            if (move.value > bestMove.value) {
-                bestMove = move;
-            }
-        }
-        return bestMove.value;
-    }
-
-    private int min(Board board, int parentBestValue, boolean lastMoveCapture)
-    {
-        Move bestMove = getInitialBestMove(board);
-        List<Move> moves = getSortedMoves(board);
-        for (Move move : moves) {
-            incrementAndCheckNodeCount();
-            Board newBoard = new Board(board);
-            boolean currentMoveCapture = isCapture(board, move);
-            boolean quiescent = isQuiescent(lastMoveCapture, currentMoveCapture);
-            newBoard.movePiece(move);
-            if (quiescent && reachedMinimumDepth(newBoard)) {
-                move.value = evaluatePosition(newBoard);
-            } else {
-                move.value = max(newBoard, bestMove.value, currentMoveCapture);
-                // Alpha Beta Pruning
-                if (move.value <= parentBestValue) {
-                    return move.value;
-                }
-            }
-            if (move.value < bestMove.value) {
-                bestMove = move;
-            }
-        }
-        return bestMove.value;
-    }
-
-    private List<Move> getSortedMoves(Board board)
+    public List<Move> getSortedMoves(Board board)
     {
         List<Move> moves = board.getLegalMoves();
         Collections.sort(moves, new moveComparator(board));
         return moves;
     }
 
-    private static boolean isCapture(Board board, Move move)
+    private void setMinPly(Board board)
     {
-        return (board.getPiece(move.endSquare) != 0);
+        minPly = board.getPly() + minDepth;
     }
 
-    private void incrementAndCheckNodeCount()
+    private boolean incrementAndCheckNodeCount()
     {
-        totalNodes++;
-        assert (totalNodes < maxNodes): "Exceeded max nodes.";
+        return (++totalNodes < maxNodesPerMove);
     }
 
     private boolean reachedMaximumNodes()
@@ -145,23 +110,59 @@ public class Engine
         return (board.getPly() >= minPly);
     }
 
-    private static boolean isQuiescent(boolean lastMoveCapture, boolean currentMoveCapture)
+    private static boolean isKingInCheck(Board board)
     {
-        return !currentMoveCapture;
-    }
-
-    private Move getInitialBestMove(Board board)
-    {
-        Move bestMove = new Move();
-        if (board.getColorToMove() == Color.WHITE) {
-            bestMove.value = Integer.MIN_VALUE;
-        } else {
-            bestMove.value = Integer.MAX_VALUE;
+        Board newBoard = new Board(board);
+        playNullMove(newBoard);
+        List<Move> moves = newBoard.getLegalMoves();
+        for (Move move : moves) {
+            if (Math.abs(newBoard.getPiece(move.endSquare)) == Piece.KING) {
+                return true;
+            }
         }
-        return bestMove;
+        return false;
     }
 
-    public int evaluatePosition(Board board)
+    private static void playNullMove(Board board)
+    {
+        Color otherColor = (board.getColorToMove() == Color.WHITE ? Color.BLACK : Color.WHITE);
+        board.setActivePieces(otherColor);
+    }
+
+    private static boolean isKingCaptured(Board board, Move move)
+    {
+        return (Math.abs(board.getPiece(move.endSquare)) == Piece.KING);
+    }
+
+    private static Board getNewPosition(Board board, Move move)
+    {
+        Board newBoard = new Board(board);
+        newBoard.movePiece(move);
+        return newBoard;
+    }
+
+    private static boolean isCapture(Board board, Move move)
+    {
+        return (board.getPiece(move.endSquare) != 0);
+    }
+
+    private static boolean isQuiescent(Board board, int alpha, boolean capture, boolean lastMoveCapture)
+    {
+        if (!lastMoveCapture && !capture) {
+            return true;
+        }
+        if (eligibleForDeltaPruning(board, alpha, capture)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean eligibleForDeltaPruning(Board board, int alpha, boolean capture)
+    {
+        return (capture && evaluatePosition(board) >= alpha);
+    }
+
+    public static int evaluatePosition(Board board)
     {
         int score = 0;
         HashMap<Byte, Byte> whitePieces = board.getWhitePieces();
@@ -174,10 +175,13 @@ public class Engine
         for (byte square: pieces) {
             score -= getPieceValue(blackPieces.get(square));
         }
+        if (board.getColorToMove() == Color.WHITE) {
+            score *= -1;
+        }
         return score;
     }
 
-    private int getPieceValue(byte piece)
+    private static int getPieceValue(byte piece)
     {
         if (Math.abs(piece) == Piece.KING) {
             return 999;
@@ -207,9 +211,9 @@ public class Engine
         @Override
         public int compare(Move move1, Move move2)
         {
-            byte pieceType1 = (byte) Math.abs(board.getPiece(move1.endSquare));
-            byte pieceType2 = (byte) Math.abs(board.getPiece(move2.endSquare));
-            return (pieceType1 < pieceType2 ? 1 : -1);
+            int pieceValue1 = getPieceValue(board.getPiece(move1.endSquare));
+            int pieceValue2 = getPieceValue(board.getPiece(move2.endSquare));
+            return pieceValue2 - pieceValue1;
         }
     }
 }

@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Board
 {
-    protected byte[] board;
     // Square, Piece
     private HashMap<Byte, Byte> blackPieces;
     private HashMap<Byte, Byte> whitePieces;
@@ -13,7 +12,6 @@ public class Board
 
     public Board()
     {
-        board = new byte[128];
         blackPieces = new HashMap<>();
         whitePieces = new HashMap<>();
         activePieces = null;
@@ -23,17 +21,27 @@ public class Board
     public Board(Board oldBoard)
     {
         this();
-        for (int i = 0; i < board.length; i++) {
-            if (oldBoard.getPiece((byte) i) != 0) {
-                setPiece(oldBoard.board[i], (byte) i);
-            }
-        }
+
+        copyPieceList(oldBoard.whitePieces);
+        copyPieceList(oldBoard.blackPieces);
+
         if (oldBoard.getColorToMove() == Color.WHITE) {
             activePieces = whitePieces;
         } else {
             activePieces = blackPieces;
         }
         ply = oldBoard.getPly();
+    }
+
+    private void copyPieceList(HashMap<Byte, Byte> oldPieceList)
+    {
+        Set<Byte> pieces = oldPieceList.keySet();
+        for (byte square: pieces) {
+            byte piece = oldPieceList.get(square);
+            if (piece != 0) {
+                setPiece(piece, square);
+            }
+        }
     }
 
     public Color getColorToMove()
@@ -53,17 +61,20 @@ public class Board
 
     public byte getPiece(byte square)
     {
-        return board[square];
+        if (whitePieces.containsKey(square)) {
+            return whitePieces.get(square);
+        }
+        if (blackPieces.containsKey(square)) {
+            return blackPieces.get(square);
+        }
+        return (byte) 0;
     }
 
     public void movePiece(Move move)
     {
-        byte piece = board[move.startSquare];
+        byte piece = getPiece(move.startSquare);
         setPiece(piece, move.endSquare);
-
         removeFromPieceList(move.startSquare);
-        addPieceToBoard(move.startSquare, (byte) 0);
-
         togglePlayerToMove();
         ply++;
     }
@@ -77,21 +88,15 @@ public class Board
     {
         removeFromPieceList(square);
         addToPieceList(square, piece);
-        addPieceToBoard(square, piece);
-    }
-
-    private void addPieceToBoard(byte square, byte piece)
-    {
-        board[square] = piece;
     }
 
     private void removeFromPieceList(byte square)
     {
         byte piece = getPiece(square);
         if (piece < 0) {
-            blackPieces.remove(square);;
+            blackPieces.remove(square);
         } else if (piece > 0) {
-            whitePieces.remove(square);;
+            whitePieces.remove(square);
         }
     }
 
@@ -159,6 +164,15 @@ public class Board
 
     public String toString()
     {
+        byte[] board = new byte[128];
+        Set<Byte> pieces = blackPieces.keySet();
+        for (byte square: pieces) {
+            board[square] = blackPieces.get(square);
+        }
+        pieces = whitePieces.keySet();
+        for (byte square: pieces) {
+            board[square] = whitePieces.get(square);
+        }
         String position = " ";
         for (int i = 0; i < 64; i++) {
             byte square = (byte) ((i + 112) - (24 * (Math.floorDiv(i, 8))));

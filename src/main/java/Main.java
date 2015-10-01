@@ -30,8 +30,7 @@ public class Main
     {
         board = new Board();
         Position.setInitialPosition(board);
-        engine = new Engine();
-        engine.setMaxNodes(10000);
+        engine = new Engine(6, 5000000);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
