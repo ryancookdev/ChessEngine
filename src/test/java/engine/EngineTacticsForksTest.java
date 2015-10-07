@@ -1,6 +1,8 @@
-package software.ryancook;
+package software.ryancook.engine;
 
 import org.junit.*;
+import software.ryancook.*;
+import software.ryancook.util.*;
 import static org.junit.Assert.*;
 
 public class EngineTacticsForksTest
@@ -24,7 +26,7 @@ public class EngineTacticsForksTest
         board.setPiece(Piece.BLACK_KING, Square.C6);
         board.setPiece(Piece.BLACK_ROOK, Square.H1);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.E4, move.endSquare);
+        assertEquals(Square.E4, move.getEndSquare());
     }
 
     @Test
@@ -36,7 +38,7 @@ public class EngineTacticsForksTest
         board.setPiece(Piece.WHITE_KING, Square.C6);
         board.setPiece(Piece.WHITE_ROOK, Square.H1);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.E4, move.endSquare);
+        assertEquals(Square.E4, move.getEndSquare());
     }
 
     @Test
@@ -48,7 +50,7 @@ public class EngineTacticsForksTest
         board.setPiece(Piece.BLACK_KING, Square.E6);
         board.setPiece(Piece.BLACK_ROOK, Square.H3);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F4, move.endSquare);
+        assertEquals(Square.F4, move.getEndSquare());
     }
 
     @Test
@@ -60,6 +62,6 @@ public class EngineTacticsForksTest
         board.setPiece(Piece.WHITE_KING, Square.E6);
         board.setPiece(Piece.WHITE_ROOK, Square.H3);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F4, move.endSquare);
+        assertEquals(Square.F4, move.getEndSquare());
     }
 }

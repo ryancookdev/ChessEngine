@@ -1,6 +1,8 @@
 package software.ryancook;
 
-public class Position
+import software.ryancook.util.*;
+
+public final class Position
 {
     public static void setInitialPosition(Board board)
     {

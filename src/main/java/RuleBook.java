@@ -1,59 +1,33 @@
 package software.ryancook;
 
+import software.ryancook.generics.MultiQueue;
+import software.ryancook.util.*;
 import java.util.*;
 
-public class RuleBook
+public final class RuleBook
 {
-    private final static byte[] blackPawnOrientation = new byte[] {-16};
-    private final static byte[] whitePawnOrientation = new byte[] {16};
-    private final static byte[] knightOrientation = new byte[] {-33, -31, -18, -14, 14, 18, 31, 33};
-    private final static byte[] bishopOrientation = new byte[]{-17, -15, 15, 17};
-    private final static byte[] rookOrientation = new byte[] {-1, -16, 1, 16};
-    private final static byte[] queenOrientation = new byte[] {-17, -16, -15, -1, 1, 15, 16, 17};
-    private final static byte[] kingOrientation = new byte[] {-17, -16, -15, -1, 1, 15, 16, 17};
-
     public static List<Move> getLegalMoves(Board board)
     {
         List<Move> moves = new ArrayList<>();
-        HashMap<Byte, Byte> activePieces = board.getActivePieces();
-        Set<Byte> pieces = activePieces.keySet();
-        for (byte square: pieces) {
-            byte piece = activePieces.get(square);
-            if (Math.abs(piece) == Piece.KING) {
+        HashMap<Square, Piece> activePieces = board.getActivePieces();
+        Set<Square> pieces = activePieces.keySet();
+        for (Square square: pieces) {
+            Piece piece = activePieces.get(square);
+            if (piece.isKing()) {
                 moves.addAll(getLegalKingMoves(board, square));
-            } else if (Math.abs(piece) == Piece.QUEEN) {
+            } else if (piece.isQueen()) {
                 moves.addAll(getLegalQueenMoves(board, square));
-            } else if (Math.abs(piece) == Piece.ROOK) {
+            } else if (piece.isRook()) {
                 moves.addAll(getLegalRookMoves(board, square));
-            } else if (Math.abs(piece) == Piece.BISHOP) {
+            } else if (piece.isBishop()) {
                 moves.addAll(getLegalBishopMoves(board, square));
-            } else if (Math.abs(piece) == Piece.KNIGHT) {
+            } else if (piece.isKnight()) {
                 moves.addAll(getLegalKnightMoves(board, square));
-            } else if (piece == Piece.WHITE_PAWN) {
+            } else if (piece.isPawn() && piece.isWhite()) {
                 moves.addAll(getLegalPawnMoves(board, square, Color.WHITE));
-            } else if (piece == Piece.BLACK_PAWN) {
+            } else if (piece.isPawn() && piece.isBlack()) {
                 moves.addAll(getLegalPawnMoves(board, square, Color.BLACK));
             }
-        }
-        return moves;
-    }
-
-    private static List<Move> getLegalKnightMoves(Board board, byte square)
-    {
-        List<Move> moves = new ArrayList<>();
-        for (byte orientation : knightOrientation) {
-            byte newSquare = (byte) (square + orientation);
-            if (!Square.isValid(newSquare)) {
-                continue;
-            }
-            byte piece = board.getPiece(square);
-            byte possiblePiece = board.getPiece(newSquare);
-            Color pieceColor = (piece < 0 ? Color.BLACK : Color.WHITE);
-            Color possiblePieceColor = (possiblePiece < 0 ? Color.BLACK : Color.WHITE);
-            if (possiblePiece != 0 && pieceColor == possiblePieceColor) {
-                continue;
-            }
-            moves.add(new Move(square, newSquare));
         }
         return moves;
     }
@@ -61,19 +35,13 @@ public class RuleBook
     /**
      * @TODO Castling
      */
-    private static List<Move> getLegalKingMoves(Board board, byte square)
+    private static List<Move> getLegalKingMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        for (byte orientation : kingOrientation) {
-            byte newSquare = (byte) (square + orientation);
-            if (!Square.isValid(newSquare)) {
-                continue;
-            }
-            byte piece = board.getPiece(square);
-            byte possiblePiece = board.getPiece(newSquare);
-            Color pieceColor = (piece < 0 ? Color.BLACK : Color.WHITE);
-            Color possiblePieceColor = (possiblePiece < 0 ? Color.BLACK : Color.WHITE);
-            if (possiblePiece != 0 && pieceColor == possiblePieceColor) {
+        MultiQueue<Square> squares = square.getKingMoves();
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (sameColorOnBothSquares(board, square, newSquare)) {
                 continue;
             }
             moves.add(new Move(square, newSquare));
@@ -81,122 +49,120 @@ public class RuleBook
         return moves;
     }
 
-    private static List<Move> getLegalBishopMoves(Board board, byte square)
-    {
-        return getLegalLongPieceMoves(board, square, bishopOrientation);
-    }
-
-    private static List<Move> getLegalRookMoves(Board board, byte square)
-    {
-        return getLegalLongPieceMoves(board, square, rookOrientation);
-    }
-
-    private static List<Move> getLegalQueenMoves(Board board, byte square)
-    {
-        return getLegalLongPieceMoves(board, square, queenOrientation);
-    }
-
-    private static List<Move> getLegalLongPieceMoves(Board board, byte square, byte[] orientations)
+    private static List<Move> getLegalQueenMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        for (byte orientation : orientations) {
-            for (int j = 1; j < 8; j++) {
-                byte newSquare = (byte) (square + (j * orientation));
-                if (!Square.isValid(newSquare)) {
-                    break;
-                }
-                byte piece = board.getPiece(square);
-                byte possiblePiece = board.getPiece(newSquare);
-                Color pieceColor = (piece < 0 ? Color.BLACK : Color.WHITE);
-                Color possiblePieceColor = (possiblePiece < 0 ? Color.BLACK : Color.WHITE);
-                if (possiblePiece != 0 && pieceColor == possiblePieceColor) {
-                    break;
-                }
-                moves.add(new Move(square, newSquare));
-                if (possiblePiece != 0 && pieceColor != possiblePieceColor) {
-                    break;
-                }
+        MultiQueue<Square> squares = square.getQueenMoves();
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (!squareIsEmpty(board, newSquare)) {
+                squares.removeLevel();
             }
-        }
-        return moves;
-    }
-
-    public static List<Move> getLegalPawnMoves(Board board, byte square, Color color)
-    {
-        List<Move> moves = new ArrayList<>();
-        moves.addAll(getSingleAndDoubleMoves(board, color, square));
-        moves.addAll(getCaptures(board, color, square));
-        return moves;
-    }
-
-    private static List<Move> getSingleAndDoubleMoves(Board board, Color color, byte square)
-    {
-        List<Move> moves = new ArrayList<>();
-        byte newSquare = getNextSquare(color, square);
-        if (!Square.isValid(newSquare)) {
-            return moves;
-        }
-        if (board.getPiece(newSquare) != 0) {
-            return moves;
-        }
-        moves.add(new Move(square, newSquare));
-
-        if (onStartSquare(board.getPiece(square), square)) {
-            newSquare = getNextSquare(color, newSquare);
-            if (!Square.isValid(newSquare)) {
-                return moves;
-            }
-            if (board.getPiece(newSquare) != 0) {
-                return moves;
+            if (sameColorOnBothSquares(board, square, newSquare)) {
+                continue;
             }
             moves.add(new Move(square, newSquare));
         }
-
         return moves;
     }
 
-    private static byte getNextSquare(Color color, byte currentSquare)
-    {
-        byte orientation = (color == Color.WHITE ? whitePawnOrientation[0] : blackPawnOrientation[0]);
-        return (byte) (currentSquare + orientation);
-    }
-
-    private static List<Move> getCaptures(Board board, Color color, byte square)
+    private static List<Move> getLegalRookMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-
-        byte newSquare = (byte) (getNextSquare(color, square) + 1);
-        if (!Square.isValid(newSquare)) {
-            return moves;
-        }
-        byte possiblePiece = board.getPiece(newSquare);
-        Color possiblePieceColor = (possiblePiece < 0 ? Color.BLACK : Color.WHITE);
-        if (possiblePiece != 0 && color != possiblePieceColor) {
+        MultiQueue<Square> squares = square.getRookMoves();
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (!squareIsEmpty(board, newSquare)) {
+                squares.removeLevel();
+            }
+            if (sameColorOnBothSquares(board, square, newSquare)) {
+                continue;
+            }
             moves.add(new Move(square, newSquare));
         }
-
-        newSquare = (byte) (getNextSquare(color, square) - 1);
-        if (!Square.isValid(newSquare)) {
-            return moves;
-        }
-        possiblePiece = board.getPiece(newSquare);
-        possiblePieceColor = (possiblePiece < 0 ? Color.BLACK : Color.WHITE);
-        if (possiblePiece != 0 && color != possiblePieceColor) {
-            moves.add(new Move(square, newSquare));
-        }
-
         return moves;
     }
 
-    private static boolean onStartSquare(byte piece, byte square)
+    private static List<Move> getLegalBishopMoves(Board board, Square square)
     {
-        if (piece == Piece.WHITE_PAWN && Square.getRank(square) == 2) {
-            return true;
+        List<Move> moves = new ArrayList<>();
+        MultiQueue<Square> squares = square.getBishopMoves();
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (!squareIsEmpty(board, newSquare)) {
+                squares.removeLevel();
+            }
+            if (sameColorOnBothSquares(board, square, newSquare)) {
+                continue;
+            }
+            moves.add(new Move(square, newSquare));
         }
-        if (piece == Piece.BLACK_PAWN && Square.getRank(square) == 7) {
-            return true;
-        }
-        return false;
+        return moves;
     }
 
+    private static List<Move> getLegalKnightMoves(Board board, Square square)
+    {
+        List<Move> moves = new ArrayList<>();
+        MultiQueue<Square> squares = square.getKnightMoves();
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (sameColorOnBothSquares(board, square, newSquare)) {
+                continue;
+            }
+            moves.add(new Move(square, newSquare));
+        }
+        return moves;
+    }
+
+    public static List<Move> getLegalPawnMoves(Board board, Square square, Color color)
+    {
+        List<Move> moves = new ArrayList<>();
+        MultiQueue<Square> squares = square.getPawnMoves(color);
+        boolean canAdvance = true;
+        while (squares.size() > 0) {
+            Square newSquare = squares.next();
+            if (square.sameDiagonal(newSquare)) {
+                if (!validPawnCapture(board, square, newSquare)) {
+                    continue;
+                }
+            } else {
+                if (canAdvance && !squareIsEmpty(board, newSquare)) {
+                    canAdvance = false;
+                    continue;
+                }
+            }
+            moves.add(new Move(square, newSquare));
+        }
+        return moves;
+    }
+
+    private static boolean validPawnCapture(Board board, Square startSquare, Square captureSquare)
+    {
+        Piece possiblePiece = board.getPiece(captureSquare);
+        if (possiblePiece == Piece.NULL) {
+            return false;
+        }
+
+        Piece piece = board.getPiece(startSquare);
+        if (piece.getColor() == possiblePiece.getColor()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean squareIsEmpty(Board board, Square square)
+    {
+        return board.getPiece(square) == Piece.NULL;
+    }
+
+    private static boolean sameColorOnBothSquares(Board board, Square square1, Square square2)
+    {
+        if (squareIsEmpty(board, square1) || squareIsEmpty(board, square2)) {
+            return false;
+        }
+        Color color1 = board.getPiece(square1).getColor();
+        Color color2 = board.getPiece(square2).getColor();
+        return (color1 == color2);
+    }
 }

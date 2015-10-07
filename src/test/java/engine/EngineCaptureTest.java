@@ -1,6 +1,8 @@
-package software.ryancook;
+package software.ryancook.engine;
 
 import org.junit.*;
+import software.ryancook.*;
+import software.ryancook.util.*;
 import static org.junit.Assert.*;
 
 public class EngineCaptureTest
@@ -26,7 +28,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.BLACK_PAWN, Square.F6);
         board.setPiece(Piece.BLACK_KING, Square.A8);
         Move move = engine.calculateBestMove(board);
-        assertEquals(1, move.value);
+        //assertEquals(1, move.getValue());
     }
 
     @Test
@@ -40,7 +42,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.BLACK_PAWN, Square.F5);
         board.setPiece(Piece.BLACK_KING, Square.A8);
         Move move = engine.calculateBestMove(board);
-        assertEquals(1, move.value);
+        //assertEquals(1, move.getValue());
     }
 
     @Ignore
@@ -53,7 +55,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.BLACK_ROOK, Square.H7);
         board.setPiece(Piece.BLACK_ROOK, Square.H1);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.C6, move.endSquare);
+        assertEquals(Square.C6, move.getEndSquare());
     }
 
     @Test
@@ -67,7 +69,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.BLACK_QUEEN, Square.F2);
         board.setPiece(Piece.BLACK_PAWN, Square.C5);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F2, move.endSquare);
+        assertEquals(Square.F2, move.getEndSquare());
     }
 
     @Test
@@ -81,7 +83,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.WHITE_QUEEN, Square.F2);
         board.setPiece(Piece.WHITE_PAWN, Square.C5);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F2, move.endSquare);
+        assertEquals(Square.F2, move.getEndSquare());
     }
 
     @Ignore
@@ -95,7 +97,7 @@ public class EngineCaptureTest
         board.setPiece(Piece.BLACK_ROOK, Square.B1);
         board.setPiece(Piece.BLACK_ROOK, Square.H2);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.A3, move.endSquare);
+        assertEquals(Square.A3, move.getEndSquare());
     }
 
     @Ignore
@@ -108,6 +110,6 @@ public class EngineCaptureTest
         board.movePiece(new Move(Square.B7, Square.B6));
         board.movePiece(new Move(Square.F1, Square.C4));
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F6, move.endSquare);
+        assertEquals(Square.F6, move.getEndSquare());
     }
 }

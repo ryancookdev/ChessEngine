@@ -1,7 +1,7 @@
 package software.ryancook;
 
 import org.junit.*;
-
+import software.ryancook.util.*;
 import java.util.List;
 import static org.junit.Assert.*;
 

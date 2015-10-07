@@ -1,8 +1,8 @@
-package software.ryancook;
+package software.ryancook.engine;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.*;
+import software.ryancook.*;
+import software.ryancook.util.*;
 import static org.junit.Assert.assertEquals;
 
 public class EngineTacticsPinsTest
@@ -26,7 +26,7 @@ public class EngineTacticsPinsTest
         board.setPiece(Piece.BLACK_KING, Square.B6);
         board.setPiece(Piece.BLACK_ROOK, Square.D4);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F2, move.endSquare);
+        assertEquals(Square.F2, move.getEndSquare());
     }
 
     @Test
@@ -38,6 +38,6 @@ public class EngineTacticsPinsTest
         board.setPiece(Piece.WHITE_KING, Square.B6);
         board.setPiece(Piece.WHITE_ROOK, Square.D4);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.F2, move.endSquare);
+        assertEquals(Square.F2, move.getEndSquare());
     }
 }

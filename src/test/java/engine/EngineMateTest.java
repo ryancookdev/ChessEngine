@@ -1,6 +1,8 @@
-package software.ryancook;
+package software.ryancook.engine;
 
 import org.junit.*;
+import software.ryancook.*;
+import software.ryancook.util.*;
 import static org.junit.Assert.*;
 
 public class EngineMateTest
@@ -12,7 +14,7 @@ public class EngineMateTest
     public void setUp() throws Exception
     {
         board = new Board();
-        engine = new Engine();
+        engine = new Engine(5000);
     }
 
     @Test
@@ -23,7 +25,7 @@ public class EngineMateTest
         board.setPiece(Piece.WHITE_KING, Square.B6);
         board.setPiece(Piece.WHITE_ROOK, Square.H1);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.H8, move.endSquare);
+        assertEquals(Square.H8, move.getEndSquare());
     }
 
     @Test
@@ -34,7 +36,7 @@ public class EngineMateTest
         board.setPiece(Piece.BLACK_KING, Square.B6);
         board.setPiece(Piece.BLACK_ROOK, Square.H1);
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.H8, move.endSquare);
+        assertEquals(Square.H8, move.getEndSquare());
     }
 
     @Test
@@ -45,10 +47,10 @@ public class EngineMateTest
         board.setPiece(Piece.WHITE_KING, Square.A6);
         board.setPiece(Piece.WHITE_ROOK, Square.A1);
         Move move = engine.calculateBestMove(board);
-        assertNotEquals(Square.B1, move.endSquare);
+        assertNotEquals(Square.B1, move.getEndSquare());
     }
 
-    @Ignore
+    @Test
     public void blackAvoidsQueenBishopF7Mate() throws Exception
     {
         Position.setInitialPosition(board);
@@ -58,7 +60,5 @@ public class EngineMateTest
         board.movePiece(new Move(Square.B7, Square.B6));
         board.movePiece(new Move(Square.F1, Square.C4));
         Move move = engine.calculateBestMove(board);
-        System.out.println("Move: " + move + " (" + move.value + ")");
     }
-
 }

@@ -1,5 +1,7 @@
 package software.ryancook;
 
+import software.ryancook.engine.Engine;
+import software.ryancook.util.*;
 import java.util.Scanner;
 
 public class Main
@@ -17,7 +19,6 @@ public class Main
 
             if (input.equals("show")) {
                 System.out.println(board);
-                System.out.println("Score: " + engine.evaluatePosition(board));
             } else {
                 getAndPlayHumanMove(input);
                 Move computerMove = getAndPlayComputerMove();
@@ -30,7 +31,7 @@ public class Main
     {
         board = new Board();
         Position.setInitialPosition(board);
-        engine = new Engine(6, 5000000);
+        engine = new Engine(5000);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
@@ -50,8 +51,8 @@ public class Main
 
     private static Move getAndPlayHumanMove(String input)
     {
-        byte startSquare = Square.getSquare(input.split("-")[0]);
-        byte endSquare = Square.getSquare(input.split("-")[1]);
+        Square startSquare = Square.getSquare(input.split("-")[0]);
+        Square endSquare = Square.getSquare(input.split("-")[1]);
         Move move = new Move(startSquare, endSquare);
         board.movePiece(move);
         return move;

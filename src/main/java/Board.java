@@ -1,13 +1,13 @@
 package software.ryancook;
 
+import software.ryancook.util.*;
 import java.util.*;
 
 public class Board
 {
-    // Square, Piece
-    private HashMap<Byte, Byte> blackPieces;
-    private HashMap<Byte, Byte> whitePieces;
-    private HashMap<Byte, Byte> activePieces;
+    private HashMap<Square, Piece> blackPieces;
+    private HashMap<Square, Piece> whitePieces;
+    private HashMap<Square, Piece> activePieces;
     private int ply;
 
     public Board()
@@ -33,14 +33,12 @@ public class Board
         ply = oldBoard.getPly();
     }
 
-    private void copyPieceList(HashMap<Byte, Byte> oldPieceList)
+    private void copyPieceList(HashMap<Square, Piece> oldPieceList)
     {
-        Set<Byte> pieces = oldPieceList.keySet();
-        for (byte square: pieces) {
-            byte piece = oldPieceList.get(square);
-            if (piece != 0) {
-                setPiece(piece, square);
-            }
+        Set<Square> pieces = oldPieceList.keySet();
+        for (Square square: pieces) {
+            Piece piece = oldPieceList.get(square);
+            setPiece(piece, square);
         }
     }
 
@@ -59,7 +57,7 @@ public class Board
         this.ply = ply;
     }
 
-    public byte getPiece(byte square)
+    public Piece getPiece(Square square)
     {
         if (whitePieces.containsKey(square)) {
             return whitePieces.get(square);
@@ -67,14 +65,17 @@ public class Board
         if (blackPieces.containsKey(square)) {
             return blackPieces.get(square);
         }
-        return (byte) 0;
+        return Piece.NULL;
     }
 
     public void movePiece(Move move)
     {
-        byte piece = getPiece(move.startSquare);
-        setPiece(piece, move.endSquare);
-        removeFromPieceList(move.startSquare);
+        Piece piece = getPiece(move.getStartSquare());
+        if (piece == Piece.NULL) {
+            throw new PieceNotFoundException();
+        }
+        setPiece(piece, move.getEndSquare());
+        removeFromPieceList(move.getStartSquare());
         togglePlayerToMove();
         ply++;
     }
@@ -84,42 +85,42 @@ public class Board
         activePieces = (activePieces == whitePieces ? blackPieces : whitePieces);
     }
 
-    public void setPiece(byte piece, byte square)
+    public void setPiece(Piece piece, Square square)
     {
         removeFromPieceList(square);
         addToPieceList(square, piece);
     }
 
-    private void removeFromPieceList(byte square)
+    private void removeFromPieceList(Square square)
     {
-        byte piece = getPiece(square);
-        if (piece < 0) {
+        Piece piece = getPiece(square);
+        if (piece.isBlack()) {
             blackPieces.remove(square);
-        } else if (piece > 0) {
+        } else if (piece.isWhite()) {
             whitePieces.remove(square);
         }
     }
 
-    public void addToPieceList(byte square, byte piece)
+    public void addToPieceList(Square square, Piece piece)
     {
-        if (piece < 0) {
+        if (piece.isBlack()) {
             blackPieces.put(square, piece);
-        } else if (piece > 0) {
+        } else if (piece.isWhite()) {
             whitePieces.put(square, piece);
         }
     }
 
-    public HashMap<Byte, Byte> getWhitePieces()
+    public HashMap<Square, Piece> getWhitePieces()
     {
         return whitePieces;
     }
 
-    public HashMap<Byte, Byte> getBlackPieces()
+    public HashMap<Square, Piece> getBlackPieces()
     {
         return blackPieces;
     }
 
-    public HashMap<Byte,Byte> getActivePieces()
+    public HashMap<Square, Piece> getActivePieces()
     {
         return activePieces;
     }
@@ -127,9 +128,9 @@ public class Board
     public int getTotalWhitePieces()
     {
         int total = 0;
-        Set<Byte> pieces = whitePieces.keySet();
-        for (byte square: pieces) {
-            if (whitePieces.get(square) != 0) {
+        Set<Square> pieces = whitePieces.keySet();
+        for (Square square: pieces) {
+            if (whitePieces.get(square) != Piece.NULL) {
                 total++;
             }
         }
@@ -139,18 +140,13 @@ public class Board
     public int getTotalBlackPieces()
     {
         int total = 0;
-        Set<Byte> pieces = blackPieces.keySet();
-        for (byte square: pieces) {
-            if (blackPieces.get(square) != 0) {
+        Set<Square> pieces = blackPieces.keySet();
+        for (Square square: pieces) {
+            if (blackPieces.get(square) != Piece.NULL) {
                 total++;
             }
         }
         return total;
-    }
-
-    public List<Move> getLegalMoves()
-    {
-        return RuleBook.getLegalMoves(this);
     }
 
     public void setActivePieces(Color color)
@@ -162,25 +158,59 @@ public class Board
         }
     }
 
+    @Override
     public String toString()
     {
-        byte[] board = new byte[128];
-        Set<Byte> pieces = blackPieces.keySet();
-        for (byte square: pieces) {
-            board[square] = blackPieces.get(square);
+        Piece[] board = new Piece[128];
+        Set<Square> pieces = blackPieces.keySet();
+        for (Square square: pieces) {
+            board[square.getValue()] = blackPieces.get(square);
         }
         pieces = whitePieces.keySet();
-        for (byte square: pieces) {
-            board[square] = whitePieces.get(square);
+        for (Square square: pieces) {
+            board[square.getValue()] = whitePieces.get(square);
         }
         String position = " ";
         for (int i = 0; i < 64; i++) {
             byte square = (byte) ((i + 112) - (24 * (Math.floorDiv(i, 8))));
-            position += (board[square] == 0 ? ". " : Piece.getString(board[square]) + " ");
+            Piece piece = board[square];
+            position += (piece == null ? ". " : piece.getLetter() + " ");
             if ((i + 1) % 8 == 0) {
                 position += "\n ";
             }
         }
         return position;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Board board = (Board) o;
+
+        if (!blackPieces.equals(board.blackPieces)) {
+            return false;
+        }
+        if (!whitePieces.equals(board.whitePieces)) {
+            return false;
+        }
+        return getColorToMove() == board.getColorToMove();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = blackPieces != null ? blackPieces.hashCode() : 0;
+        result = 31 * result + (whitePieces != null ? whitePieces.hashCode() : 0);
+        result = 31 * result + (activePieces != null ? activePieces.hashCode() : 0);
+        return result;
+    }
+
+    class PieceNotFoundException extends RuntimeException {}
 }
