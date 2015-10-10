@@ -4,20 +4,14 @@ import org.junit.*;
 import software.ryancook.util.*;
 import static org.junit.Assert.*;
 
-public class MultiQueueTest
+public class MultiLevelQueueTest
 {
-    private MultiQueue<Move> moves;
+    private MultiLevelQueue<Move> moves;
 
     @Before
     public void setUp() throws Exception
     {
-        moves = new MultiQueue<>();
-    }
-
-    @Test
-    public void myTest() throws Exception
-    {
-        moves.addLevel(null);
+        moves = new MultiLevelQueue<>();
     }
 
     @Test

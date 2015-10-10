@@ -15,18 +15,21 @@ public class EngineTest
     public void setUp() throws Exception
     {
         board = new Board();
-        engine = new Engine();
+        engine = new Engine(1000000);
+        //engine = new Engine(5000);
         evaluator = new Evaluator();
     }
 
-    @Ignore
-    public void startWithPlyGreaterThanZero() throws Exception
+    @Test
+    public void myTest() throws Exception
     {
-        Position.setInitialPosition(board);
+        /*Position.setInitialPosition(board);
         board.movePiece(new Move(Square.E2, Square.E4));
         board.movePiece(new Move(Square.A7, Square.A6));
-        board.movePiece(new Move(Square.F1, Square.A6));
+        board.movePiece(new Move(Square.D2, Square.D4));
+        board.movePiece(new Move(Square.B7, Square.B5));
+        board.movePiece(new Move(Square.C2, Square.C4));
         Move move = engine.calculateBestMove(board);
-        assertEquals(Square.A6, move.getEndSquare());
+        System.out.println("Play: " + move);*/
     }
 }

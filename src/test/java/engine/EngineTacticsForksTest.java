@@ -14,7 +14,7 @@ public class EngineTacticsForksTest
     public void setUp() throws Exception
     {
         board = new Board();
-        engine = new Engine();
+        engine = new Engine(1500);
     }
 
     @Test

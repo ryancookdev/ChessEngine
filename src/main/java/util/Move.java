@@ -27,6 +27,11 @@ public class Move
         return endSquare;
     }
 
+    public boolean isNull()
+    {
+        return (startSquare == Square.NULL || endSquare == Square.NULL);
+    }
+
     @Override
     public String toString()
     {

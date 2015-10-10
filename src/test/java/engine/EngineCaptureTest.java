@@ -14,7 +14,7 @@ public class EngineCaptureTest
     public void setUp() throws Exception
     {
         board = new Board();
-        engine = new Engine();
+        engine = new Engine(5000);
     }
 
     @Test

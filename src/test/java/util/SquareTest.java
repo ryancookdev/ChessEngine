@@ -1,7 +1,7 @@
 package software.ryancook.util;
 
 import org.junit.Test;
-import software.ryancook.generics.MultiQueue;
+import software.ryancook.generics.MultiLevelQueue;
 import static org.junit.Assert.*;
 
 public class SquareTest
@@ -56,7 +56,7 @@ public class SquareTest
     @Test
     public void bishopMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getBishopMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getBishopMoves();
         assertEquals(13, squares.size());
 
         squares = Square.A1.getBishopMoves();
@@ -66,7 +66,7 @@ public class SquareTest
     @Test
     public void blackPawnMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E5.getBlackPawnMoves();
+        MultiLevelQueue<Square> squares = Square.E5.getBlackPawnMoves();
         assertEquals(3, squares.size());
 
         squares = Square.A5.getBlackPawnMoves();
@@ -76,7 +76,7 @@ public class SquareTest
     @Test
     public void blackPawnSecondRankMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E7.getBlackPawnMoves();
+        MultiLevelQueue<Square> squares = Square.E7.getBlackPawnMoves();
         assertEquals(4, squares.size());
 
         squares = Square.A7.getBlackPawnMoves();
@@ -86,7 +86,7 @@ public class SquareTest
     @Test
     public void kingMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getKingMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getKingMoves();
         assertEquals(8, squares.size());
 
         squares = Square.A1.getKingMoves();
@@ -96,7 +96,7 @@ public class SquareTest
     @Test
     public void knightMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getKnightMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getKnightMoves();
         assertEquals(8, squares.size());
 
         squares = Square.A1.getKnightMoves();
@@ -106,7 +106,7 @@ public class SquareTest
     @Test
     public void queenMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getQueenMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getQueenMoves();
         assertEquals(27, squares.size());
 
         squares = Square.A1.getQueenMoves();
@@ -116,7 +116,7 @@ public class SquareTest
     @Test
     public void rookMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getRookMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getRookMoves();
         assertEquals(14, squares.size());
 
         squares = Square.E4.getRookMoves();
@@ -126,7 +126,7 @@ public class SquareTest
     @Test
     public void whitePawnMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E4.getWhitePawnMoves();
+        MultiLevelQueue<Square> squares = Square.E4.getWhitePawnMoves();
         assertEquals(3, squares.size());
 
         squares = Square.A4.getWhitePawnMoves();
@@ -136,7 +136,7 @@ public class SquareTest
     @Test
     public void whitePawnSecondRankMoves() throws Exception
     {
-        MultiQueue<Square> squares = Square.E2.getWhitePawnMoves();
+        MultiLevelQueue<Square> squares = Square.E2.getWhitePawnMoves();
         assertEquals(4, squares.size());
 
         squares = Square.A2.getWhitePawnMoves();

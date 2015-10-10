@@ -31,7 +31,7 @@ public class Main
     {
         board = new Board();
         Position.setInitialPosition(board);
-        engine = new Engine(5000);
+        engine = new Engine(15000);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
@@ -45,7 +45,9 @@ public class Main
     private static Move getAndPlayComputerMove()
     {
         Move computerMove = engine.calculateBestMove(board);
-        board.movePiece(computerMove);
+        if (!computerMove.isNull()) {
+            board.movePiece(computerMove);
+        }
         return computerMove;
     }
 

@@ -40,7 +40,7 @@ public class EvaluatorTest
         board.setPiece(Piece.NULL, Square.D1);
         board.setPiece(Piece.NULL, Square.D2);
         int score = evaluator.evaluate(board);
-        assertEquals("White should be 1 point ahead", -1, score);
+        assertEquals("White should be 5 points ahead", 105, score);
     }
 
     @Test
@@ -60,6 +60,25 @@ public class EvaluatorTest
         assertEquals(Square.F2, moves.get(0).getEndSquare());
         assertEquals(Square.D2, moves.get(1).getEndSquare());
         assertEquals(Square.C5, moves.get(4).getEndSquare());
+    }
+
+    @Test
+    public void checksBeforeCaptures() throws Exception
+    {
+        board.setActivePieces(Color.WHITE);
+        board.setPiece(Piece.WHITE_KNIGHT, Square.E4);
+        board.setPiece(Piece.BLACK_KING, Square.B5);
+        board.setPiece(Piece.BLACK_KNIGHT, Square.D6);
+        board.setPiece(Piece.BLACK_ROOK, Square.D2);
+        board.setPiece(Piece.BLACK_QUEEN, Square.F2);
+
+        List<Move> moves = RuleBook.getLegalMoves(board);
+        evaluator.sortMoves(board, moves);
+
+        assertEquals(Square.D6, moves.get(0).getEndSquare());
+        assertEquals(Square.C3, moves.get(1).getEndSquare());
+        assertEquals(Square.F2, moves.get(2).getEndSquare());
+        assertEquals(Square.D2, moves.get(3).getEndSquare());
     }
 
 }

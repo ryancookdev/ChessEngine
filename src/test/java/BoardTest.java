@@ -119,7 +119,7 @@ public class BoardTest
         assertEquals("There should be 16 white pieces", 16, board.getTotalWhitePieces());
     }
 
-    @Ignore
+    @Test
     public void legalMovesForInitialPosition() throws Exception
     {
         Position.setInitialPosition(board);

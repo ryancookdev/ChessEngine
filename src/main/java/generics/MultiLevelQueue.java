@@ -4,32 +4,45 @@ import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class MultiQueue<T>
+public class MultiLevelQueue<E>
 {
     private int size;
-    private TreeMap<String, Queue<T>> multiQueue;
+    private TreeMap<String, Queue<E>> levels;
 
-    public MultiQueue()
+    /**
+     *
+     */
+    public MultiLevelQueue()
     {
-        multiQueue = new TreeMap<>();
+        levels = new TreeMap<>();
     }
 
+    /**
+     * Adds a new level with an empty queue.
+     *
+     * @param levelName  the name to be used as the level key, not null
+     * @throws InvalidParameterException if levelName is null
+     * @throws DuplicateLevelException if levelName is not unique
+     */
     public void addLevel(String levelName)
     {
         if (levelName == null) {
             throw new InvalidParameterException();
         }
         checkIfLevelNameIsUnique(levelName);
-        multiQueue.put(levelName, new LinkedList<>());
+        levels.put(levelName, new LinkedList<>());
     }
 
     private void checkIfLevelNameIsUnique(String levelName)
     {
-        if (multiQueue.containsKey(levelName)) {
+        if (levels.containsKey(levelName)) {
             throw new DuplicateLevelException();
         }
     }
 
+    /**
+     * Removes the queue at the current level.
+     */
     public void removeLevel()
     {
         clearLevelAndDecreaseCount();
@@ -37,37 +50,47 @@ public class MultiQueue<T>
 
     private void clearLevelAndDecreaseCount()
     {
-        Queue<T> level = getHeadLevel();
+        Queue<E> level = getHeadLevel();
         size -= level.size();
         level.clear();
     }
 
-    private Queue<T> getHeadLevel()
+    private Queue<E> getHeadLevel()
     {
-        Entry<String, Queue<T>> firstEntry = multiQueue.firstEntry();
+        Entry<String, Queue<E>> firstEntry = levels.firstEntry();
         if (firstEntry == null) {
             throw new LevelNotFoundException();
         }
         return firstEntry.getValue();
     }
 
-    public void add(T obj)
+    /**
+     * Adds an object to the queue at the current level.
+     *
+     * @param obj
+     */
+    public void add(E obj)
     {
-        Queue<T> level = getTailLevel();
+        Queue<E> level = getTailLevel();
         level.add(obj);
         size++;
     }
 
-    private Queue<T> getTailLevel()
+    private Queue<E> getTailLevel()
     {
-        Entry<String, Queue<T>> lastEntry = multiQueue.lastEntry();
+        Entry<String, Queue<E>> lastEntry = levels.lastEntry();
         if (lastEntry == null) {
             throw new LevelNotFoundException();
         }
         return lastEntry.getValue();
     }
 
-    public T next()
+    /**
+     * Removes the first element from the first queue and returns that element.
+     *
+     * @return
+     */
+    public E next()
     {
         removeLevelIfEmpty();
         if (noLevelsExist()) {
@@ -76,9 +99,9 @@ public class MultiQueue<T>
         return popNextObject();
     }
 
-    private T popNextObject()
+    private E popNextObject()
     {
-        Queue<T> level = getHeadLevel();
+        Queue<E> level = getHeadLevel();
         if (level.size() == 0) {
             return null;
         }
@@ -88,10 +111,10 @@ public class MultiQueue<T>
 
     private void removeLevelIfEmpty()
     {
-        while (multiQueue.size() > 0) {
-            Entry<String, Queue<T>> levelEntry = multiQueue.firstEntry();
+        while (levels.size() > 0) {
+            Entry<String, Queue<E>> levelEntry = levels.firstEntry();
             if (levelEntry.getValue().size() == 0) {
-                multiQueue.remove(levelEntry.getKey());
+                levels.remove(levelEntry.getKey());
                 continue;
             }
             break;
@@ -100,9 +123,14 @@ public class MultiQueue<T>
 
     private boolean noLevelsExist()
     {
-        return multiQueue.size() == 0;
+        return levels.size() == 0;
     }
 
+    /**
+     * Returns the total number of elements in the multilevel queue.
+     *
+     * @return
+     */
     public int size()
     {
         return size;

@@ -1,7 +1,6 @@
 package software.ryancook.engine;
 
 import software.ryancook.Board;
-
 import java.util.*;
 
 public class PositionTable
@@ -16,8 +15,7 @@ public class PositionTable
     public void put(Board board, int score, int evaluationDepth)
     {
         PositionResult result = new PositionResult(board.getPly(), score, evaluationDepth);
-        int hash = board.hashCode();
-        table.put(hash, result);
+        table.put(board.hashCode(), result);
     }
 
     public int size()

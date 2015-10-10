@@ -1,6 +1,6 @@
 package software.ryancook;
 
-import software.ryancook.generics.MultiQueue;
+import software.ryancook.generics.MultiLevelQueue;
 import software.ryancook.util.*;
 import java.util.*;
 
@@ -38,7 +38,7 @@ public final class RuleBook
     private static List<Move> getLegalKingMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getKingMoves();
+        MultiLevelQueue<Square> squares = square.getKingMoves();
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (sameColorOnBothSquares(board, square, newSquare)) {
@@ -52,7 +52,7 @@ public final class RuleBook
     private static List<Move> getLegalQueenMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getQueenMoves();
+        MultiLevelQueue<Square> squares = square.getQueenMoves();
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (!squareIsEmpty(board, newSquare)) {
@@ -69,7 +69,7 @@ public final class RuleBook
     private static List<Move> getLegalRookMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getRookMoves();
+        MultiLevelQueue<Square> squares = square.getRookMoves();
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (!squareIsEmpty(board, newSquare)) {
@@ -86,7 +86,7 @@ public final class RuleBook
     private static List<Move> getLegalBishopMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getBishopMoves();
+        MultiLevelQueue<Square> squares = square.getBishopMoves();
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (!squareIsEmpty(board, newSquare)) {
@@ -103,7 +103,7 @@ public final class RuleBook
     private static List<Move> getLegalKnightMoves(Board board, Square square)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getKnightMoves();
+        MultiLevelQueue<Square> squares = square.getKnightMoves();
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (sameColorOnBothSquares(board, square, newSquare)) {
@@ -114,24 +114,24 @@ public final class RuleBook
         return moves;
     }
 
-    public static List<Move> getLegalPawnMoves(Board board, Square square, Color color)
+    private static List<Move> getLegalPawnMoves(Board board, Square square, Color color)
     {
         List<Move> moves = new ArrayList<>();
-        MultiQueue<Square> squares = square.getPawnMoves(color);
+        MultiLevelQueue<Square> squares = square.getPawnMoves(color);
         boolean canAdvance = true;
         while (squares.size() > 0) {
             Square newSquare = squares.next();
             if (square.sameDiagonal(newSquare)) {
-                if (!validPawnCapture(board, square, newSquare)) {
-                    continue;
+                if (validPawnCapture(board, square, newSquare)) {
+                    moves.add(new Move(square, newSquare));
                 }
             } else {
-                if (canAdvance && !squareIsEmpty(board, newSquare)) {
+                if (canAdvance && squareIsEmpty(board, newSquare)) {
+                    moves.add(new Move(square, newSquare));
+                } else {
                     canAdvance = false;
-                    continue;
                 }
             }
-            moves.add(new Move(square, newSquare));
         }
         return moves;
     }
@@ -165,4 +165,24 @@ public final class RuleBook
         Color color2 = board.getPiece(square2).getColor();
         return (color1 == color2);
     }
+
+    public static boolean isKingInCheck(Board board)
+    {
+        Board newBoard = new Board(board);
+        playNullMove(newBoard);
+        List<Move> moves = RuleBook.getLegalMoves(newBoard);
+        for (Move move : moves) {
+            if (newBoard.getPiece(move.getEndSquare()).isKing()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void playNullMove(Board board)
+    {
+        Color otherColor = (board.getColorToMove() == Color.WHITE ? Color.BLACK : Color.WHITE);
+        board.setActivePieces(otherColor);
+    }
+
 }

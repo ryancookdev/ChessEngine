@@ -1,6 +1,6 @@
 package software.ryancook.util;
 
-import software.ryancook.generics.MultiQueue;
+import software.ryancook.generics.MultiLevelQueue;
 import java.util.*;
 
 public enum Square
@@ -21,8 +21,7 @@ public enum Square
     static
     {
         for (Square square : EnumSet.allOf(Square.class)) {
-            int squareValue = square.getValue();
-            lookup.put(squareValue, square);
+            lookup.put(square.getValue(), square);
         }
     }
 
@@ -44,32 +43,32 @@ public enum Square
         return value;
     }
 
-    public MultiQueue<Square> getKingMoves()
+    public MultiLevelQueue<Square> getKingMoves()
     {
         return getBasicMoves(new int[]{-17, -16, -15, -1, 1, 15, 16, 17}, 1);
     }
 
-    public MultiQueue<Square> getQueenMoves()
+    public MultiLevelQueue<Square> getQueenMoves()
     {
         return getBasicMoves(new int[] {-17, -16, -15, -1, 1, 15, 16, 17}, 7);
     }
 
-    public MultiQueue<Square> getRookMoves()
+    public MultiLevelQueue<Square> getRookMoves()
     {
         return getBasicMoves(new int[] {-1, -16, 1, 16}, 7);
     }
 
-    public MultiQueue<Square> getBishopMoves()
+    public MultiLevelQueue<Square> getBishopMoves()
     {
         return getBasicMoves(new int[] {-17, -15, 15, 17}, 7);
     }
 
-    public MultiQueue<Square> getKnightMoves()
+    public MultiLevelQueue<Square> getKnightMoves()
     {
         return getBasicMoves(new int[] {-33, -31, -18, -14, 14, 18, 31, 33}, 1);
     }
 
-    public MultiQueue<Square> getPawnMoves(Color color)
+    public MultiLevelQueue<Square> getPawnMoves(Color color)
     {
         if (color == Color.WHITE) {
             return getWhitePawnMoves();
@@ -78,7 +77,7 @@ public enum Square
         }
     }
 
-    public MultiQueue<Square> getWhitePawnMoves()
+    public MultiLevelQueue<Square> getWhitePawnMoves()
     {
         int[] directions = new int[] {15, 16, 17};
         if (getRank() == 2) {
@@ -87,7 +86,7 @@ public enum Square
         return getBasicMoves(directions, 1);
     }
 
-    public MultiQueue<Square> getBlackPawnMoves()
+    public MultiLevelQueue<Square> getBlackPawnMoves()
     {
         int[] directions = new int[] {-16, -15, -17};
         if (getRank() == 7) {
@@ -96,9 +95,9 @@ public enum Square
         return getBasicMoves(directions, 1);
     }
 
-    private MultiQueue<Square> getBasicMoves(int[] directions, int maxDistance)
+    private MultiLevelQueue<Square> getBasicMoves(int[] directions, int maxDistance)
     {
-        MultiQueue<Square> squares = new MultiQueue<>();
+        MultiLevelQueue<Square> squares = new MultiLevelQueue<>();
         for (int i = 0; i < directions.length; i++) {
             squares.addLevel("basicMoves" + i);
             for (int j = 0; j < maxDistance; j++) {

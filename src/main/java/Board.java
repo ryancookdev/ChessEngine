@@ -47,6 +47,12 @@ public class Board
         return (activePieces == whitePieces ? Color.WHITE : Color.BLACK);
     }
 
+    public void toggleColorToMove()
+    {
+        Color newColor = (getColorToMove() == Color.BLACK ? Color.WHITE : Color.BLACK);
+        setActivePieces(newColor);
+    }
+
     public int getPly()
     {
         return ply;

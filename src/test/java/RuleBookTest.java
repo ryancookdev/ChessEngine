@@ -351,4 +351,25 @@ public class RuleBookTest
         List<Move> moves = RuleBook.getLegalMoves(board);
         assertEquals(3, moves.size());
     }
+
+    @Test
+    public void whitePawnDoubleMoveCannotJumpPiece() throws Exception
+    {
+        board.setActivePieces(Color.WHITE);
+        board.setPiece(Piece.WHITE_PAWN, Square.E2);
+        board.setPiece(Piece.BLACK_PAWN, Square.E3);
+        List<Move> moves = RuleBook.getLegalMoves(board);
+        assertEquals(0, moves.size());
+    }
+
+    @Test
+    public void blackPawnDoubleMoveCannotJumpPiece() throws Exception
+    {
+        board.setActivePieces(Color.BLACK);
+        board.setPiece(Piece.BLACK_PAWN, Square.E7);
+        board.setPiece(Piece.WHITE_PAWN, Square.E6);
+        List<Move> moves = RuleBook.getLegalMoves(board);
+        assertEquals(0, moves.size());
+    }
+
 }

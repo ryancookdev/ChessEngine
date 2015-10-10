@@ -7,8 +7,8 @@ import java.util.*;
 public class Engine
 {
     private static final int DEFAULT_MAX_TIME = 1000;
-    private static final int LOSE_GAME = -999;
-    private static final int WIN_GAME = 999;
+    private static final int LOSE_GAME = -99999;
+    private static final int WIN_GAME = 99999;
     private final long maxTime;
     private int minDepth;
     private int minPly;
@@ -33,6 +33,7 @@ public class Engine
 
     public Move calculateBestMove(Board board)
     {
+        positionTable = new PositionTable();
         startTime();
         Move bestMove = new Move();
         for (minDepth = 0; minDepth >= 0; minDepth++) {
@@ -44,7 +45,13 @@ public class Engine
             for (Move move : moves) {
                 Board newBoard = getNewPosition(board, move);
 
-                int score = (-1 * negamax(newBoard, LOSE_GAME, -1 * alpha, false));
+                int score = (-1 * negamax(newBoard, LOSE_GAME, -1 * alpha));
+
+                if (score == WIN_GAME) {
+                    System.out.println("I win");
+                    return move;
+                }
+
                 positionTable.put(newBoard, score, minDepth);
 
                 if (alpha < score) {
@@ -64,41 +71,43 @@ public class Engine
                 break;
             }
         }
+        if (bestMove.isNull()) {
+            System.out.println("You win");
+        }
         return bestMove;
     }
 
-    private int negamax(Board board, int alpha, int beta, boolean lastMoveCapture)
+    private int negamax(Board board, int alpha, int beta)
     {
         List<Move> moves;
+
         if (reachedMinimumDepth(board)) {
-            moves = getSortedCaptures(board);
+            moves = getChecksAndCaptures(board);
+            if (moves.size() == 0) {
+                // Quiescent
+                int score = evaluator.evaluate(board);
+                if (board.getColorToMove() == Color.BLACK) {
+                    score *= -1;
+                }
+                if (score >= beta) {
+                    return beta; // fail hard beta-cutoff
+                }
+                return score;
+            }
+            moves.add(new Move());
         } else {
             moves = getSortedMoves(board);
         }
+
         for (Move move : moves) {
             if (outOfTime()) {
                 return beta;
             }
-            boolean capture = isCapture(board, move);
             if (isKingCaptured(board, move)) {
                 return WIN_GAME;
             }
-            Board newBoard = getNewPosition(board, move);
 
-            int score;
-            if (hasPositionAtMinimumDepth(newBoard)) {
-                score = positionTable.getScore(newBoard);
-            } else {
-                if (reachedMinimumDepth(newBoard) && isQuiescent(newBoard, alpha, capture, lastMoveCapture)) {
-                    score = evaluator.evaluate(newBoard);
-                } else if (reachedMinimumDepth(newBoard) && eligibleForDeltaPruning(newBoard, alpha, capture)) {
-                    // This seems to lead to bad queen sacrifices
-                    score = alpha;
-                } else {
-                    score = (-1 * negamax(newBoard, -1 * beta, -1 * alpha, capture));
-                }
-                positionTable.put(newBoard, score, minDepth);
-            }
+            int score = getScore(board, move, alpha, beta);
             if (score >= beta) {
                 return beta; // fail hard beta-cutoff
             }
@@ -106,12 +115,45 @@ public class Engine
                 alpha = score;
             }
         }
+
         if (alpha == LOSE_GAME) {
-            if (!isKingInCheck(board)) {
+            if (!RuleBook.isKingInCheck(board)) {
                 return 0;
             }
         }
+
         return alpha;
+    }
+
+    private int getScore(Board board, Move move, int alpha, int beta)
+    {
+        if (move.isNull()) {
+            int score = evaluator.evaluate(board);
+            if (board.getColorToMove() == Color.BLACK) {
+                score *= -1;
+            }
+            return score;
+        }
+
+        Board newBoard = getNewPosition(board, move);
+
+        if (hasPositionAtMinimumDepth(newBoard)) {
+            return positionTable.getScore(newBoard);
+        }
+
+        int score;
+        if (reachedMinimumDepth(newBoard)) {
+            score = evaluator.evaluate(newBoard);
+            if (score < alpha) { // Delta pruning
+                score = alpha;
+                positionTable.put(newBoard, score, minDepth);
+                return score;
+            }
+        }
+
+        score = (-1 * negamax(newBoard, -1 * beta, -1 * alpha));
+        positionTable.put(newBoard, score, minDepth);
+        return score;
     }
 
     private boolean hasPositionAtMinimumDepth(Board board)
@@ -141,26 +183,7 @@ public class Engine
 
     private boolean reachedMinimumDepth(Board board)
     {
-        return (board.getPly() >= minPly);
-    }
-
-    private static boolean isKingInCheck(Board board)
-    {
-        Board newBoard = new Board(board);
-        playNullMove(newBoard);
-        List<Move> moves = RuleBook.getLegalMoves(newBoard);
-        for (Move move : moves) {
-            if (newBoard.getPiece(move.getEndSquare()).isKing()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void playNullMove(Board board)
-    {
-        Color otherColor = (board.getColorToMove() == Color.WHITE ? Color.BLACK : Color.WHITE);
-        board.setActivePieces(otherColor);
+        return (board.getPly() > minPly);
     }
 
     private static boolean isKingCaptured(Board board, Move move)
@@ -180,36 +203,34 @@ public class Engine
         return (board.getPiece(move.getEndSquare()) != Piece.NULL);
     }
 
-    private boolean isQuiescent(Board board, int alpha, boolean capture, boolean lastMoveCapture)
-    {
-        if (!lastMoveCapture && !capture) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean eligibleForDeltaPruning(Board board, int alpha, boolean capture)
-    {
-        return (capture && evaluator.evaluate(board) >= alpha);
-    }
-
     private List<Move> getSortedMoves(Board board)
     {
+        List<Move> validMoves = new ArrayList<>();
         List<Move> moves = RuleBook.getLegalMoves(board);
-        evaluator.sortMoves(board, moves);
-        return moves;
+        for (Move move : moves) {
+            Board newBoard = new Board(board);
+            newBoard.movePiece(move);
+            newBoard.toggleColorToMove();
+            if (!RuleBook.isKingInCheck(newBoard)) {
+                validMoves.add(move);
+            }
+        }
+        evaluator.sortMoves(board, validMoves);
+        return validMoves;
     }
 
-    private List<Move> getSortedCaptures(Board board)
+    private List<Move> getChecksAndCaptures(Board board)
     {
-        List<Move> captures = new ArrayList<>();
         List<Move> moves = getSortedMoves(board);
-        for (Move move: moves) {
-            if (board.getPiece(move.getEndSquare()) != Piece.NULL) {
-                captures.add(move);
+        for (int i = moves.size() - 1; i >= 0; i--) {
+            Board newBoard = new Board(board);
+            Move move = moves.get(i);
+            newBoard.movePiece(move);
+            if (isCapture(board, move) || RuleBook.isKingInCheck(newBoard)) {
+                return moves;
             }
+            moves.remove(i);
         }
         return moves;
     }
-
 }
