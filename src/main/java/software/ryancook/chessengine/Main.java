@@ -1,14 +1,14 @@
-package software.ryancook;
+package software.ryancook.chessengine;
 
-import software.ryancook.engine.Engine;
-import software.ryancook.util.*;
+import software.ryancook.chessengine.game.*;
+import software.ryancook.gameengine.*;
 import java.util.Scanner;
 
 public class Main
 {
     public static Scanner scanner;
-    public static Board board;
-    public static Engine engine;
+    public static GameState gameState;
+    public static Negamax negamax;
 
     public static void main(String[] args)
     {
@@ -18,7 +18,7 @@ public class Main
             lookForExitCommand(input);
 
             if (input.equals("show")) {
-                System.out.println(board);
+                System.out.println(gameState);
             } else {
                 getAndPlayHumanMove(input);
                 Move computerMove = getAndPlayComputerMove();
@@ -29,9 +29,10 @@ public class Main
 
     private static void initialize()
     {
-        board = new Board();
-        Position.setInitialPosition(board);
-        engine = new Engine(15000);
+        gameState = new ChessGameState();
+        Position.setInitialPosition((ChessGameState) gameState);
+        Evaluator evaluator = new ChessEvaluator();
+        negamax = new Negamax(evaluator);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
@@ -39,24 +40,24 @@ public class Main
     private static void displayComputerMove(Move computerMove)
     {
         System.out.println("  " + computerMove + "\n");
-        System.out.println(board);
+        System.out.println(gameState);
     }
 
     private static Move getAndPlayComputerMove()
     {
-        Move computerMove = engine.calculateBestMove(board);
+        Move computerMove = negamax.findBestMove(gameState);
         if (!computerMove.isNull()) {
-            board.movePiece(computerMove);
+            gameState = gameState.playMove(computerMove);
         }
         return computerMove;
     }
 
     private static Move getAndPlayHumanMove(String input)
     {
-        Square startSquare = Square.getSquare(input.split("-")[0]);
-        Square endSquare = Square.getSquare(input.split("-")[1]);
-        Move move = new Move(startSquare, endSquare);
-        board.movePiece(move);
+        ChessSquare startSquare = ChessSquare.getSquare(input.split("-")[0]);
+        ChessSquare endSquare = ChessSquare.getSquare(input.split("-")[1]);
+        ChessMove move = new ChessMove(startSquare, endSquare);
+        gameState = gameState.playMove(move);
         return move;
     }
 

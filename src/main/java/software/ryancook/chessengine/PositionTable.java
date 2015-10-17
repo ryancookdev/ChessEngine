@@ -1,6 +1,6 @@
-package software.ryancook.engine;
+package software.ryancook.chessengine;
 
-import software.ryancook.Board;
+import software.ryancook.chessengine.game.*;
 import java.util.*;
 
 public class PositionTable
@@ -12,10 +12,10 @@ public class PositionTable
         table = new HashMap<>();
     }
 
-    public void put(Board board, int score, int evaluationDepth)
+    public void put(ChessGameState gameState, int score, int evaluationDepth)
     {
-        PositionResult result = new PositionResult(board.getPly(), score, evaluationDepth);
-        table.put(board.hashCode(), result);
+        PositionResult result = new PositionResult(gameState.getPly(), score, evaluationDepth);
+        table.put(gameState.hashCode(), result);
     }
 
     public int size()
@@ -23,19 +23,19 @@ public class PositionTable
         return table.size();
     }
 
-    public boolean hasPosition(Board board)
+    public boolean hasPosition(ChessGameState gameState)
     {
-        return table.containsKey(board.hashCode());
+        return table.containsKey(gameState.hashCode());
     }
 
-    public int getScore(Board board)
+    public int getScore(ChessGameState gameState)
     {
-        return table.get(board.hashCode()).getScore();
+        return table.get(gameState.hashCode()).getScore();
     }
 
-    public int getEvaluationDepth(Board board)
+    public int getEvaluationDepth(ChessGameState gameState)
     {
-        return table.get(board.hashCode()).getEvaluationDepth();
+        return table.get(gameState.hashCode()).getEvaluationDepth();
     }
 
     private class PositionResult

@@ -1,6 +1,6 @@
-package software.ryancook.engine;
+/*package software.ryancook.engine;
 
-import software.ryancook.*;
+import software.ryancook.game.Color;
 import software.ryancook.util.*;
 import java.util.*;
 
@@ -10,40 +10,40 @@ public class Engine
     private static final int LOSE_GAME = -99999;
     private static final int WIN_GAME = 99999;
     private final long maxTime;
-    private int minDepth;
-    private int minPly;
     private long startTime;
+    private int minDepth;
+    private int startDepth;
 
-    private Evaluator evaluator;
+    private ChessEvaluator evaluator;
     private PositionTable positionTable;
 
     public Engine()
     {
         this.maxTime = DEFAULT_MAX_TIME;
-        evaluator = new Evaluator();
+        evaluator = new ChessEvaluator();
         positionTable = new PositionTable();
     }
 
     public Engine(int maxTime)
     {
         this.maxTime = maxTime;
-        evaluator = new Evaluator();
+        evaluator = new ChessEvaluator();
         positionTable = new PositionTable();
     }
 
-    public Move calculateBestMove(Board board)
+    public ChessMove calculateBestMove(ChessBoard board)
     {
         positionTable = new PositionTable();
         startTime();
-        Move bestMove = new Move();
+        ChessMove bestMove = new ChessMove();
+        startDepth = board.getPly();
         for (minDepth = 0; minDepth >= 0; minDepth++) {
             boolean discardIteration = false;
-            setMinPly(board);
-            List<Move> moves = getSortedMoves(board);
+            List<ChessMove> moves = getSortedMoves(board);
             int alpha = LOSE_GAME;
-            Move bestMoveThisIteration = new Move();
-            for (Move move : moves) {
-                Board newBoard = getNewPosition(board, move);
+            ChessMove bestMoveThisIteration = new ChessMove();
+            for (ChessMove move : moves) {
+                ChessBoard newBoard = getNewPosition(board, move);
 
                 int score = (-1 * negamax(newBoard, LOSE_GAME, -1 * alpha));
 
@@ -65,9 +65,9 @@ public class Engine
             }
             if (!discardIteration) {
                 bestMove = bestMoveThisIteration;
-                System.out.println("Depth: " + minDepth + ", Move: " + bestMove);
+                System.out.println("Depth: " + minDepth + ", ChessMove: " + bestMove);
             } else {
-                System.out.println("Not completed: " + minDepth + ", Move: " + bestMove);
+                System.out.println("Not completed: " + minDepth + ", ChessMove: " + bestMove);
                 break;
             }
         }
@@ -77,36 +77,25 @@ public class Engine
         return bestMove;
     }
 
-    private int negamax(Board board, int alpha, int beta)
+    private int negamax(ChessBoard board, int alpha, int beta)
     {
-        List<Move> moves;
+        List<ChessMove> moves = getMoves(board);
 
+        if (reachedMinimumDepth(board) && moves.size() == 0) { // Quiescent
+            int score = getSubjectiveScore(board);
+            return (score >= beta ? beta : score);
+        }
         if (reachedMinimumDepth(board)) {
-            moves = getChecksAndCaptures(board);
-            if (moves.size() == 0) {
-                // Quiescent
-                int score = evaluator.evaluate(board);
-                if (board.getColorToMove() == Color.BLACK) {
-                    score *= -1;
-                }
-                if (score >= beta) {
-                    return beta; // fail hard beta-cutoff
-                }
-                return score;
-            }
-            moves.add(new Move());
-        } else {
-            moves = getSortedMoves(board);
+            addNullMove(moves);
         }
 
-        for (Move move : moves) {
+        for (ChessMove move : moves) {
             if (outOfTime()) {
                 return beta;
             }
             if (isKingCaptured(board, move)) {
                 return WIN_GAME;
             }
-
             int score = getScore(board, move, alpha, beta);
             if (score >= beta) {
                 return beta; // fail hard beta-cutoff
@@ -117,7 +106,7 @@ public class Engine
         }
 
         if (alpha == LOSE_GAME) {
-            if (!RuleBook.isKingInCheck(board)) {
+            if (!ChessRuleBook.isKingInCheck(board)) {
                 return 0;
             }
         }
@@ -125,25 +114,20 @@ public class Engine
         return alpha;
     }
 
-    private int getScore(Board board, Move move, int alpha, int beta)
+    private int getScore(ChessBoard board, ChessMove move, int alpha, int beta)
     {
         if (move.isNull()) {
-            int score = evaluator.evaluate(board);
-            if (board.getColorToMove() == Color.BLACK) {
-                score *= -1;
-            }
-            return score;
+            return getSubjectiveScore(board);
         }
 
-        Board newBoard = getNewPosition(board, move);
+        ChessBoard newBoard = getNewPosition(board, move);
 
         if (hasPositionAtMinimumDepth(newBoard)) {
             return positionTable.getScore(newBoard);
         }
 
-        int score;
         if (reachedMinimumDepth(newBoard)) {
-            score = evaluator.evaluate(newBoard);
+            int score = evaluator.eval(newBoard);
             if (score < alpha) { // Delta pruning
                 score = alpha;
                 positionTable.put(newBoard, score, minDepth);
@@ -151,12 +135,31 @@ public class Engine
             }
         }
 
-        score = (-1 * negamax(newBoard, -1 * beta, -1 * alpha));
+        int score = -negamax(newBoard, -beta, -alpha);
         positionTable.put(newBoard, score, minDepth);
         return score;
     }
 
-    private boolean hasPositionAtMinimumDepth(Board board)
+    private int getSubjectiveScore(ChessBoard board)
+    {
+        int score = evaluator.eval(board);
+        if (board.getColorToMove() == Color.BLACK) {
+            score *= -1;
+        }
+        return score;
+    }
+
+    private void addNullMove(List<ChessMove> moves)
+    {
+        moves.add(new ChessMove());
+    }
+
+    private List<ChessMove> getMoves(ChessBoard board)
+    {
+        return (reachedMinimumDepth(board) ? getChecksAndCaptures(board) : getSortedMoves(board));
+    }
+
+    private boolean hasPositionAtMinimumDepth(ChessBoard board)
     {
         if (positionTable.hasPosition(board)) {
             if (positionTable.getEvaluationDepth(board) >= minDepth) {
@@ -171,47 +174,42 @@ public class Engine
         startTime = System.currentTimeMillis();
     }
 
-    private void setMinPly(Board board)
-    {
-        minPly = board.getPly() + minDepth;
-    }
-
     private boolean outOfTime()
     {
         return System.currentTimeMillis() - startTime > maxTime;
     }
 
-    private boolean reachedMinimumDepth(Board board)
+    private boolean reachedMinimumDepth(ChessBoard board)
     {
-        return (board.getPly() > minPly);
+        return (board.getPly() > startDepth + minDepth);
     }
 
-    private static boolean isKingCaptured(Board board, Move move)
+    private static boolean isKingCaptured(ChessBoard board, ChessMove move)
     {
         return (board.getPiece(move.getEndSquare()).isKing());
     }
 
-    private static Board getNewPosition(Board board, Move move)
+    private static ChessBoard getNewPosition(ChessBoard board, ChessMove move)
     {
-        Board newBoard = new Board(board);
+        ChessBoard newBoard = new ChessBoard(board);
         newBoard.movePiece(move);
         return newBoard;
     }
 
-    private static boolean isCapture(Board board, Move move)
+    private static boolean isCapture(ChessBoard board, ChessMove move)
     {
-        return (board.getPiece(move.getEndSquare()) != Piece.NULL);
+        return (board.getPiece(move.getEndSquare()) != ChessPiece.NULL);
     }
 
-    private List<Move> getSortedMoves(Board board)
+    private List<ChessMove> getSortedMoves(ChessBoard board)
     {
-        List<Move> validMoves = new ArrayList<>();
-        List<Move> moves = RuleBook.getLegalMoves(board);
-        for (Move move : moves) {
-            Board newBoard = new Board(board);
+        List<ChessMove> validMoves = new ArrayList<>();
+        List<ChessMove> moves = ChessRuleBook.getLegalMoves(board);
+        for (ChessMove move : moves) {
+            ChessBoard newBoard = new ChessBoard(board);
             newBoard.movePiece(move);
             newBoard.toggleColorToMove();
-            if (!RuleBook.isKingInCheck(newBoard)) {
+            if (!ChessRuleBook.isKingInCheck(newBoard)) {
                 validMoves.add(move);
             }
         }
@@ -219,18 +217,18 @@ public class Engine
         return validMoves;
     }
 
-    private List<Move> getChecksAndCaptures(Board board)
+    private List<ChessMove> getChecksAndCaptures(ChessBoard board)
     {
-        List<Move> moves = getSortedMoves(board);
+        List<ChessMove> moves = getSortedMoves(board);
         for (int i = moves.size() - 1; i >= 0; i--) {
-            Board newBoard = new Board(board);
-            Move move = moves.get(i);
+            ChessBoard newBoard = new ChessBoard(board);
+            ChessMove move = moves.get(i);
             newBoard.movePiece(move);
-            if (isCapture(board, move) || RuleBook.isKingInCheck(newBoard)) {
+            if (isCapture(board, move) || ChessRuleBook.isKingInCheck(newBoard)) {
                 return moves;
             }
             moves.remove(i);
         }
         return moves;
     }
-}
+}*/

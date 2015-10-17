@@ -1,16 +1,16 @@
-package software.ryancook;
+package software.ryancook.chessengine.game;
 
-import software.ryancook.util.*;
+import software.ryancook.gameengine.*;
 import java.util.*;
 
-public class Board
+public class ChessGameState implements GameState
 {
-    private HashMap<Square, Piece> blackPieces;
-    private HashMap<Square, Piece> whitePieces;
-    private HashMap<Square, Piece> activePieces;
+    private HashMap<ChessSquare, ChessPiece> blackPieces;
+    private HashMap<ChessSquare, ChessPiece> whitePieces;
+    private HashMap<ChessSquare, ChessPiece> activePieces;
     private int ply;
 
-    public Board()
+    public ChessGameState()
     {
         blackPieces = new HashMap<>();
         whitePieces = new HashMap<>();
@@ -18,7 +18,7 @@ public class Board
         ply = 0;
     }
 
-    public Board(Board oldBoard)
+    public ChessGameState(ChessGameState oldBoard)
     {
         this();
 
@@ -33,11 +33,11 @@ public class Board
         ply = oldBoard.getPly();
     }
 
-    private void copyPieceList(HashMap<Square, Piece> oldPieceList)
+    private void copyPieceList(HashMap<ChessSquare, ChessPiece> oldPieceList)
     {
-        Set<Square> pieces = oldPieceList.keySet();
-        for (Square square: pieces) {
-            Piece piece = oldPieceList.get(square);
+        Set<ChessSquare> pieces = oldPieceList.keySet();
+        for (ChessSquare square: pieces) {
+            ChessPiece piece = oldPieceList.get(square);
             setPiece(piece, square);
         }
     }
@@ -53,9 +53,52 @@ public class Board
         setActivePieces(newColor);
     }
 
+    @Override
     public int getPly()
     {
         return ply;
+    }
+
+    @Override
+    public boolean isFirstPlayerToMove()
+    {
+        return getColorToMove() == Color.WHITE;
+    }
+
+    @Override
+    public List<Move> getMoves()
+    {
+        ChessRuleBook ruleBook = new ChessRuleBook();
+        List<Move> moves = ruleBook.getMoves(this);
+        return moves;
+    }
+
+    @Override
+    public Move getNullMove()
+    {
+        return new ChessMove();
+    }
+
+    @Override
+    public GameState playMove(Move m)
+    {
+        ChessMove move = (ChessMove) m;
+        ChessGameState gameState = new ChessGameState(this);
+        ChessPiece piece = gameState.getPiece(move.getStartSquare());
+        if (piece == ChessPiece.NULL) {
+            throw new PieceNotFoundException();
+        }
+        gameState.setPiece(piece, move.getEndSquare());
+        gameState.removeFromPieceList(move.getStartSquare());
+        gameState.togglePlayerToMove();
+        gameState.setPly(gameState.getPly() + 1);
+        return gameState;
+    }
+
+    @Override
+    public List<Move> getCriticalMoves()
+    {
+        return new ArrayList<>();
     }
 
     public void setPly(int ply)
@@ -63,7 +106,7 @@ public class Board
         this.ply = ply;
     }
 
-    public Piece getPiece(Square square)
+    public ChessPiece getPiece(ChessSquare square)
     {
         if (whitePieces.containsKey(square)) {
             return whitePieces.get(square);
@@ -71,19 +114,7 @@ public class Board
         if (blackPieces.containsKey(square)) {
             return blackPieces.get(square);
         }
-        return Piece.NULL;
-    }
-
-    public void movePiece(Move move)
-    {
-        Piece piece = getPiece(move.getStartSquare());
-        if (piece == Piece.NULL) {
-            throw new PieceNotFoundException();
-        }
-        setPiece(piece, move.getEndSquare());
-        removeFromPieceList(move.getStartSquare());
-        togglePlayerToMove();
-        ply++;
+        return ChessPiece.NULL;
     }
 
     private void togglePlayerToMove()
@@ -91,15 +122,15 @@ public class Board
         activePieces = (activePieces == whitePieces ? blackPieces : whitePieces);
     }
 
-    public void setPiece(Piece piece, Square square)
+    public void setPiece(ChessPiece piece, ChessSquare square)
     {
         removeFromPieceList(square);
         addToPieceList(square, piece);
     }
 
-    private void removeFromPieceList(Square square)
+    private void removeFromPieceList(ChessSquare square)
     {
-        Piece piece = getPiece(square);
+        ChessPiece piece = getPiece(square);
         if (piece.isBlack()) {
             blackPieces.remove(square);
         } else if (piece.isWhite()) {
@@ -107,7 +138,7 @@ public class Board
         }
     }
 
-    public void addToPieceList(Square square, Piece piece)
+    public void addToPieceList(ChessSquare square, ChessPiece piece)
     {
         if (piece.isBlack()) {
             blackPieces.put(square, piece);
@@ -116,17 +147,17 @@ public class Board
         }
     }
 
-    public HashMap<Square, Piece> getWhitePieces()
+    public HashMap<ChessSquare, ChessPiece> getWhitePieces()
     {
         return whitePieces;
     }
 
-    public HashMap<Square, Piece> getBlackPieces()
+    public HashMap<ChessSquare, ChessPiece> getBlackPieces()
     {
         return blackPieces;
     }
 
-    public HashMap<Square, Piece> getActivePieces()
+    public HashMap<ChessSquare, ChessPiece> getActivePieces()
     {
         return activePieces;
     }
@@ -134,9 +165,9 @@ public class Board
     public int getTotalWhitePieces()
     {
         int total = 0;
-        Set<Square> pieces = whitePieces.keySet();
-        for (Square square: pieces) {
-            if (whitePieces.get(square) != Piece.NULL) {
+        Set<ChessSquare> pieces = whitePieces.keySet();
+        for (ChessSquare square: pieces) {
+            if (whitePieces.get(square) != ChessPiece.NULL) {
                 total++;
             }
         }
@@ -146,9 +177,9 @@ public class Board
     public int getTotalBlackPieces()
     {
         int total = 0;
-        Set<Square> pieces = blackPieces.keySet();
-        for (Square square: pieces) {
-            if (blackPieces.get(square) != Piece.NULL) {
+        Set<ChessSquare> pieces = blackPieces.keySet();
+        for (ChessSquare square: pieces) {
+            if (blackPieces.get(square) != ChessPiece.NULL) {
                 total++;
             }
         }
@@ -167,19 +198,19 @@ public class Board
     @Override
     public String toString()
     {
-        Piece[] board = new Piece[128];
-        Set<Square> pieces = blackPieces.keySet();
-        for (Square square: pieces) {
+        ChessPiece[] board = new ChessPiece[128];
+        Set<ChessSquare> pieces = blackPieces.keySet();
+        for (ChessSquare square: pieces) {
             board[square.getValue()] = blackPieces.get(square);
         }
         pieces = whitePieces.keySet();
-        for (Square square: pieces) {
+        for (ChessSquare square: pieces) {
             board[square.getValue()] = whitePieces.get(square);
         }
         String position = " ";
         for (int i = 0; i < 64; i++) {
             byte square = (byte) ((i + 112) - (24 * (Math.floorDiv(i, 8))));
-            Piece piece = board[square];
+            ChessPiece piece = board[square];
             position += (piece == null ? ". " : piece.getLetter() + " ");
             if ((i + 1) % 8 == 0) {
                 position += "\n ";
@@ -198,7 +229,7 @@ public class Board
             return false;
         }
 
-        Board board = (Board) o;
+        ChessGameState board = (ChessGameState) o;
 
         if (!blackPieces.equals(board.blackPieces)) {
             return false;
