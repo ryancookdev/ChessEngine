@@ -1,7 +1,7 @@
 package software.ryancook.chessengine.game;
 
 import software.ryancook.gameengine.Move;
-import software.ryancook.generics.MultiLevelQueue;
+import software.ryancook.complexcollections.MultiLevelQueue;
 import java.util.*;
 
 public class ChessRuleBook

@@ -1,7 +1,7 @@
 package software.ryancook.chessengine.util;
 
 import org.junit.Test;
-import software.ryancook.generics.MultiLevelQueue;
+import software.ryancook.complexcollections.MultiLevelQueue;
 import software.ryancook.chessengine.game.*;
 import static org.junit.Assert.*;
 

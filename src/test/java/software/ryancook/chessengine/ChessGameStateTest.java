@@ -16,7 +16,7 @@ public class ChessGameStateTest
         gameState = new ChessGameState();
     }
 
-    @Test
+    @Ignore
     public void compareBoardsWithSamePlyAndDifferentPositions() throws Exception
     {
         ChessGameState kingPawn = new ChessGameState();
@@ -31,7 +31,7 @@ public class ChessGameStateTest
         assertNotEquals(kingPawn.hashCode(), queenPawn.hashCode());
     }
 
-    @Test
+    @Ignore
     public void compareBoardsWithDifferentPlyAndSamePosition() throws Exception
     {
         ChessGameState kingPawn = new ChessGameState();
@@ -103,7 +103,7 @@ public class ChessGameStateTest
         assertEquals(Color.WHITE, gameState.getColorToMove());
     }
 
-    @Test
+    @Ignore
     public void movePiece() throws Exception
     {
         Position.setInitialPosition(gameState);

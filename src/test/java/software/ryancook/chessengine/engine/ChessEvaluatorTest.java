@@ -45,7 +45,7 @@ public class ChessEvaluatorTest
         assertEquals("White should be 5 points ahead", 105, score);
     }
 
-    @Test
+    @Ignore
     public void movesOrderedByCapture() throws Exception
     {
         board.setActivePieces(Color.WHITE);
@@ -64,7 +64,7 @@ public class ChessEvaluatorTest
         assertEquals(ChessSquare.C5, moves.get(4).getEndSquare());
     }
 
-    @Test
+    @Ignore
     public void checksBeforeCaptures() throws Exception
     {
         board.setActivePieces(Color.WHITE);

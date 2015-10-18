@@ -26,6 +26,11 @@
             <artifactId>GameEngine</artifactId>
             <version>v0.1.0-alpha</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ryancookdev</groupId>
+            <artifactId>ComplexCollections</artifactId>
+            <version>2d54df</version>
+        </dependency>
     </dependencies>
 
     <build>
