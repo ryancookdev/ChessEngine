@@ -1,9 +1,9 @@
-package software.ryancook.chessengine.game;
+package software.ryancook.chess.util;
 
 import software.ryancook.complexcollections.MultiLevelQueue;
 import java.util.*;
 
-public enum ChessSquare
+public enum Square
 {
     NULL(-1),
     A1(0), B1(1), C1(2), D1(3), E1(4), F1(5), G1(6), H1(7),
@@ -15,25 +15,25 @@ public enum ChessSquare
     A7(96), B7(97), C7(98), D7(99), E7(100), F7(101), G7(102), H7(103),
     A8(112), B8(113), C8(114), D8(115), E8(116), F8(117), G8(118), H8(119);
 
-    private static final Map<Integer, ChessSquare> lookup = new HashMap<>();
+    private static final Map<Integer, Square> lookup = new HashMap<>();
     private int value;
 
     static
     {
-        for (ChessSquare square : EnumSet.allOf(ChessSquare.class)) {
+        for (final Square square : EnumSet.allOf(Square.class)) {
             lookup.put(square.getValue(), square);
         }
     }
 
-    public static ChessSquare getSquare(String square)
+    public static Square getSquare(final String square)
     {
-        int file = square.toLowerCase().charAt(0) - 96;
-        int rank = Integer.parseInt(square.substring(1, 2));
-        int squareValue = (file + (16 * (rank - 1))) - 1;
+        final int file = square.toLowerCase().charAt(0) - 96;
+        final int rank = Integer.parseInt(square.substring(1, 2));
+        final int squareValue = (file + (16 * (rank - 1))) - 1;
         return lookup.get(squareValue);
     }
 
-    ChessSquare(int value)
+    Square(final int value)
     {
         this.value = value;
     }
@@ -43,32 +43,32 @@ public enum ChessSquare
         return value;
     }
 
-    public MultiLevelQueue<ChessSquare> getKingMoves()
+    public MultiLevelQueue<Square> getKingMoves()
     {
         return getBasicMoves(new int[]{-17, -16, -15, -1, 1, 15, 16, 17}, 1);
     }
 
-    public MultiLevelQueue<ChessSquare> getQueenMoves()
+    public MultiLevelQueue<Square> getQueenMoves()
     {
         return getBasicMoves(new int[] {-17, -16, -15, -1, 1, 15, 16, 17}, 7);
     }
 
-    public MultiLevelQueue<ChessSquare> getRookMoves()
+    public MultiLevelQueue<Square> getRookMoves()
     {
         return getBasicMoves(new int[] {-1, -16, 1, 16}, 7);
     }
 
-    public MultiLevelQueue<ChessSquare> getBishopMoves()
+    public MultiLevelQueue<Square> getBishopMoves()
     {
         return getBasicMoves(new int[] {-17, -15, 15, 17}, 7);
     }
 
-    public MultiLevelQueue<ChessSquare> getKnightMoves()
+    public MultiLevelQueue<Square> getKnightMoves()
     {
         return getBasicMoves(new int[] {-33, -31, -18, -14, 14, 18, 31, 33}, 1);
     }
 
-    public MultiLevelQueue<ChessSquare> getPawnMoves(Color color)
+    public MultiLevelQueue<Square> getPawnMoves(final Color color)
     {
         if (color == Color.WHITE) {
             return getWhitePawnMoves();
@@ -77,7 +77,7 @@ public enum ChessSquare
         }
     }
 
-    public MultiLevelQueue<ChessSquare> getWhitePawnMoves()
+    public MultiLevelQueue<Square> getWhitePawnMoves()
     {
         int[] directions = new int[] {15, 16, 17};
         if (getRank() == 2) {
@@ -86,7 +86,7 @@ public enum ChessSquare
         return getBasicMoves(directions, 1);
     }
 
-    public MultiLevelQueue<ChessSquare> getBlackPawnMoves()
+    public MultiLevelQueue<Square> getBlackPawnMoves()
     {
         int[] directions = new int[] {-16, -15, -17};
         if (getRank() == 7) {
@@ -95,14 +95,14 @@ public enum ChessSquare
         return getBasicMoves(directions, 1);
     }
 
-    private MultiLevelQueue<ChessSquare> getBasicMoves(int[] directions, int maxDistance)
+    private MultiLevelQueue<Square> getBasicMoves(final int[] directions, final int maxDistance)
     {
-        MultiLevelQueue<ChessSquare> squares = new MultiLevelQueue<>();
+        MultiLevelQueue<Square> squares = new MultiLevelQueue<>();
         for (int i = 0; i < directions.length; i++) {
             squares.addLevel("basicMoves" + i);
             for (int j = 0; j < maxDistance; j++) {
-                int distance = directions[i] * (j + 1);
-                int newSquareValue = value + distance;
+                final int distance = directions[i] * (j + 1);
+                final int newSquareValue = value + distance;
                 if (isValid(newSquareValue)){
                     squares.add(lookup.get(newSquareValue));
                 }
@@ -111,12 +111,12 @@ public enum ChessSquare
         return squares;
     }
 
-    private boolean isValid(int square)
+    private boolean isValid(final int square)
     {
         return (square & 0x88) == 0;
     }
 
-    public boolean sameDiagonal(ChessSquare square)
+    public boolean sameDiagonal(final Square square)
     {
         if (Math.abs(square.getValue() - value) % 15 == 0) {
             return true;
@@ -140,10 +140,10 @@ public enum ChessSquare
 
     public String getString()
     {
-        int newValue = value + 1;
-        int rank = Math.floorDiv(newValue, 16) + 1;
-        int file = newValue - ((rank - 1) * 16);
-        char letter = (char) (file + 96);
+        final int newValue = value + 1;
+        final int rank = Math.floorDiv(newValue, 16) + 1;
+        final int file = newValue - ((rank - 1) * 16);
+        final char letter = (char) (file + 96);
         return letter + Integer.toString(rank);
     }
 }

@@ -1,37 +1,38 @@
-package software.ryancook.chessengine.game;
+package software.ryancook.chess.engine;
 
+import software.ryancook.chess.util.Square;
 import software.ryancook.gameengine.Move;
 
 public class ChessMove implements Move
 {
-    private final ChessSquare startSquare;
-    private final ChessSquare endSquare;
+    private final Square startSquare;
+    private final Square endSquare;
 
     public ChessMove()
     {
-        startSquare = ChessSquare.NULL;
-        endSquare = ChessSquare.NULL;
+        startSquare = Square.NULL;
+        endSquare = Square.NULL;
     }
 
-    public ChessMove(ChessSquare startSquare, ChessSquare endSquare)
+    public ChessMove(final Square startSquare, final Square endSquare)
     {
         this.startSquare = startSquare;
         this.endSquare = endSquare;
     }
 
-    public ChessSquare getStartSquare()
+    public Square getStartSquare()
     {
         return startSquare;
     }
 
-    public ChessSquare getEndSquare()
+    public Square getEndSquare()
     {
         return endSquare;
     }
 
     public boolean isNull()
     {
-        return (startSquare == ChessSquare.NULL || endSquare == ChessSquare.NULL);
+        return (startSquare == Square.NULL || endSquare == Square.NULL);
     }
 
     @Override

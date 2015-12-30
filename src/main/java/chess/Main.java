@@ -1,6 +1,7 @@
-package software.ryancook.chessengine;
+package software.ryancook.chess;
 
-import software.ryancook.chessengine.game.*;
+import software.ryancook.chess.engine.*;
+import software.ryancook.chess.util.*;
 import software.ryancook.gameengine.*;
 import java.util.Scanner;
 
@@ -14,14 +15,14 @@ public class Main
     {
         initialize();
         while (true) {
-            String input = askUserForMove();
+            final String input = askUserForMove();
             lookForExitCommand(input);
 
             if (input.equals("show")) {
                 System.out.println(gameState);
             } else {
                 getAndPlayHumanMove(input);
-                Move computerMove = getAndPlayComputerMove();
+                final Move computerMove = getAndPlayComputerMove();
                 displayComputerMove(computerMove);
             }
         }
@@ -29,15 +30,15 @@ public class Main
 
     private static void initialize()
     {
-        gameState = new ChessGameState();
-        Position.setInitialPosition((ChessGameState) gameState);
-        Evaluator evaluator = new ChessEvaluator();
+        gameState = Position.getInitialPosition();
+        final Evaluator evaluator = new ChessEvaluator();
         negamax = new Negamax(evaluator);
+        negamax.setMaxTime(10000);
         scanner = new Scanner(System.in);
         System.out.println("Your move:");
     }
 
-    private static void displayComputerMove(Move computerMove)
+    private static void displayComputerMove(final Move computerMove)
     {
         System.out.println("  " + computerMove + "\n");
         System.out.println(gameState);
@@ -45,18 +46,18 @@ public class Main
 
     private static Move getAndPlayComputerMove()
     {
-        Move computerMove = negamax.findBestMove(gameState);
+        final Move computerMove = negamax.findBestMove(gameState);
         if (!computerMove.isNull()) {
             gameState = gameState.playMove(computerMove);
         }
         return computerMove;
     }
 
-    private static Move getAndPlayHumanMove(String input)
+    private static Move getAndPlayHumanMove(final String input)
     {
-        ChessSquare startSquare = ChessSquare.getSquare(input.split("-")[0]);
-        ChessSquare endSquare = ChessSquare.getSquare(input.split("-")[1]);
-        ChessMove move = new ChessMove(startSquare, endSquare);
+        final Square startSquare = Square.getSquare(input.split("-")[0]);
+        final Square endSquare = Square.getSquare(input.split("-")[1]);
+        final ChessMove move = new ChessMove(startSquare, endSquare);
         gameState = gameState.playMove(move);
         return move;
     }
@@ -67,7 +68,7 @@ public class Main
         return scanner.nextLine();
     }
 
-    private static void lookForExitCommand(String input)
+    private static void lookForExitCommand(final String input)
     {
         if (input.equals("q") || input.equals("exit")) {
             System.out.println("Goodbye");

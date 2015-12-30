@@ -23,8 +23,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.ryancookdev</groupId>
-            <artifactId>GameEngine</artifactId>
-            <version>v0.1.0-alpha</version>
+            <artifactId>gameengine</artifactId>
+            <version>dfb845a</version>
         </dependency>
         <dependency>
             <groupId>com.github.ryancookdev</groupId>

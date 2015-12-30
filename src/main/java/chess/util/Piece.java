@@ -1,6 +1,6 @@
-package software.ryancook.chessengine.game;
+package software.ryancook.chess.util;
 
-public enum ChessPiece
+public enum Piece
 {
     NULL(0),
     PAWN(1),
@@ -24,7 +24,7 @@ public enum ChessPiece
 
     private int value;
 
-    ChessPiece(int value)
+    Piece(final int value)
     {
         this.value = value;
     }
